@@ -63,6 +63,10 @@ int colormode;
 // Random number for where to put the Blaster Deflect
 int randomNumber;
 
+// Starting positions for blaster deflect
+const int maxStartPos = NUM_LEDSF - 7;
+const int minStartPos = 5;
+
 // String for which color is selected
 String color;
 
@@ -328,7 +332,7 @@ void setColor() {
 
 void blasterDeflect() {
 
-  randomNumber = random(5,18);
+  randomNumber = random(minStartPos, maxStartPos);
   Serial.println(randomNumber);
   Serial.println("How Shocking!");
 
@@ -344,5 +348,5 @@ void blasterDeflect() {
     ledsB[j].setRGB( red, green, blue);
     FastLED.show();
     delay(0);
-  } 
+  }  
 }
