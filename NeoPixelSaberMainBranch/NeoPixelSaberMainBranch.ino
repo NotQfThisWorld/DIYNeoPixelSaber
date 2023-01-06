@@ -63,6 +63,10 @@ int colormode;
 // Random number for where to put the Blaster Deflect
 int randomNumber;
 
+// Starting positions for blaster deflect
+const int maxStartPos = NUM_LEDSF - 7;
+const int minStartPos = 5;
+
 // String for which color is selected
 String color;
 
@@ -198,8 +202,8 @@ void setColor() {
     greenTip = 0;
     blueTip = 200;
     // Third color
-    redDef = 30;
-    greenDef = 30;
+    redDef = 200;
+    greenDef = 200;
     blueDef = 255;
 
     color = "BLUE";
@@ -217,8 +221,8 @@ void setColor() {
     blueTip = 2;
     // Third color
     redDef = 255;
-    greenDef = 40;
-    blueDef = 20;
+    greenDef = 150;
+    blueDef = 150;
     // Changes Delay, to make a more "dramatic" blade opening/retracting
     DELAYVAL = 15;
 
@@ -257,8 +261,8 @@ void setColor() {
     blueTip = 255;
     // Third color
     redDef = 255;
-    greenDef = 140;
-    blueDef = 30;
+    greenDef = 200;
+    blueDef = 180;
 
     color = "GOLD";
     colormode++;
@@ -274,7 +278,7 @@ void setColor() {
     greenTip = 100;
     blueTip = 0;
     // Third color
-    redDef = 70;
+    redDef = 240;
     greenDef = 255; //220;
     blueDef = 255; //220;
 
@@ -284,16 +288,16 @@ void setColor() {
 
     case 5: // SILVER BLUE
     // Primary color
-    red = 70;
-    green = 70;
+    red = 50;
+    green = 50;
     blue = 255;
     // Secondary color
     redTip = 200;
     greenTip = 20;
     blueTip = 20;
     // Third color
-    redDef = 110;
-    greenDef = 110;
+    redDef = 240;
+    greenDef = 240;
     blueDef = 255;
 
     color = "SILVER BLUE";
@@ -310,8 +314,8 @@ void setColor() {
     greenTip = 0;
     blueTip = 0;
     // Third color
-    redDef = 130;
-    greenDef = 40;
+    redDef = 255;
+    greenDef = 200;
     blueDef = 255;
 
     color = "PURPLE";
@@ -328,7 +332,7 @@ void setColor() {
 
 void blasterDeflect() {
 
-  randomNumber = random(5,18);
+  randomNumber = random(minStartPos, maxStartPos);
   Serial.println(randomNumber);
   Serial.println("How Shocking!");
 
@@ -344,5 +348,5 @@ void blasterDeflect() {
     ledsB[j].setRGB( red, green, blue);
     FastLED.show();
     delay(0);
-  } 
+  }  
 }
