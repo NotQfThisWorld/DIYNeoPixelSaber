@@ -19,15 +19,14 @@ int DELAYVAL = 10; //Milliseconds between each pixel on the blade lighting up.
 const int igniteButton = 2;
 // Nano: 2
 
-
 const int actionButton = 4;
 // Nano: 4
 const int shockPin = 5;
 // Nano: 9
 
 int shockState;
-int actionBtnState = 0;
-int igniteBtnState = 0;
+int actionBtnState;
+int igniteBtnState;
 
 int CheckSwitch=1;  // variable for reading the current SwitchPin status
 int LastCheck=1;  // variable for keeping track of SwitchPin
@@ -44,23 +43,28 @@ const int bluePin = 9;
 // Nano: 6
 
 // Primary color values, for blade
-int red = 0;
-int green = 0;
-int blue = 0;
+int red;
+int green;
+int blue;
 
 // Secondary color values, for tipdrag
-int redTip = 0;
-int greenTip = 0;
-int blueTip = 0;
+int redTip;
+int greenTip;
+int blueTip;
 
 // Third color values, for blaster deflect
-int redDef = 0;
-int greenDef = 0;
-int blueDef = 0;
+int redDef;
+int greenDef;
+int blueDef;
 
-int colormode = 0;
+// Int for which color is chosen
+int colormode;
 
-String color = "black";
+// Random number for where to put the Blaster Deflect
+int randomNumber;
+
+// String for which color is selected
+String color;
 
 void setup() {
 
@@ -78,13 +82,11 @@ void setup() {
 }
 
 void loop() {
-
+  
   shockState = digitalRead(shockPin);
   igniteBtnState = digitalRead(igniteButton);
   actionBtnState = digitalRead(actionButton);
 
-  delay(1);
-  
   if (bladeOff) {
     if (igniteBtnState == HIGH) { // Checks if the blade should be on. Starts the blade if true
       // Start Blade
@@ -112,7 +114,6 @@ void loop() {
       analogWrite(redPin, redTip);
       analogWrite(greenPin, greenTip);
       analogWrite(bluePin, blueTip);
-
       tipChange = ! tipChange;
     }
 
@@ -126,10 +127,11 @@ void loop() {
       tipChange = ! tipChange;      
 
     }
+    delay(1);
+    if (digitalRead(shockPin) == LOW) { // Checks if the knock switch has been disturbed. Runs blasterDeflect function if true.
 
-    else if (digitalRead(shockPin) == LOW) {
-      Serial.println("How Shocking!");
-      delay(500);
+      blasterDeflect();
+
     }
   }    
 }
@@ -192,9 +194,9 @@ void setColor() {
     green = 0;
     blue = 255;
     // Secondary color
-    redTip = 255;
+    redTip = 200;
     greenTip = 0;
-    blueTip = 0;
+    blueTip = 200;
     // Third color
     redDef = 30;
     greenDef = 30;
@@ -211,12 +213,12 @@ void setColor() {
     blue = 0;
     // Secondary color
     redTip = 255;
-    greenTip = 0;
-    blueTip = 255;
+    greenTip = 30;
+    blueTip = 2;
     // Third color
     redDef = 255;
-    greenDef = 20;
-    blueDef = 10;
+    greenDef = 40;
+    blueDef = 20;
     // Changes Delay, to make a more "dramatic" blade opening/retracting
     DELAYVAL = 15;
 
@@ -236,7 +238,7 @@ void setColor() {
     // Third color
     redDef = 30;
     greenDef = 255;
-    blueDef = 30;
+    blueDef = 80;
     // Changes Delay back to normal
     DELAYVAL = 10;
 
@@ -273,8 +275,8 @@ void setColor() {
     blueTip = 0;
     // Third color
     redDef = 70;
-    greenDef = 220;
-    blueDef = 220;
+    greenDef = 255; //220;
+    blueDef = 255; //220;
 
     color = "AQUA";
     colormode++;
@@ -324,26 +326,23 @@ void setColor() {
   Serial.println(color);
 }
 
-
-void tipDrag(int redTip, int greenTip, int blueTip) {
-
-Serial.print("TipDraging with ");
-Serial.print(redTip);
-Serial.print(" , ");
-Serial.print(greenTip);
-Serial.print(" , ");
-Serial.println(blueTip);
-
-  analogWrite(redPin, redTip
-);
-  analogWrite(greenPin, greenTip);
-  analogWrite(bluePin, blueTip);
-
-}
-
 void blasterDeflect() {
 
-  // *** Debugging ***
-  Serial.println("Deflect!");
+  randomNumber = random(5,18);
+  Serial.println(randomNumber);
+  Serial.println("How Shocking!");
 
+  for(int j=randomNumber; j<randomNumber + 5; j++ ) {
+    ledsF[j].setRGB( redDef, greenDef, blueDef);
+    ledsB[j].setRGB( redDef, greenDef, blueDef);
+    FastLED.show();
+    delay(0);
+  }
+  delay(500);
+  for(int j=randomNumber; j<randomNumber + 5; j++ ) {
+    ledsF[j].setRGB( red, green, blue);
+    ledsB[j].setRGB( red, green, blue);
+    FastLED.show();
+    delay(0);
+  } 
 }
