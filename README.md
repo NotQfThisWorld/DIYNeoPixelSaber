@@ -14,7 +14,7 @@ My goal is to make a lightsaber using arduino, and relativly cheap parts.
 - 1x PowerBank/4 AA battery holder (haven't quite decided yet)
 - 1m PP-tube 32mm
 - 1m PP-tube 40mm
-- 1m polycarbonate tube (around 30-35 mm diameter)
+- 1m polycarbonate tube (May not be ideal, depending on your budget. Will come up with alternatives later)
 - TP cable
 
 ## Tools:
