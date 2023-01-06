@@ -22,3 +22,9 @@ My goal is to make a lightsaber using arduino, and relativly cheap parts.
 - Knife
 - Saw
 - Sandpaper
+
+## Procedure
+
+1. First, you will want to prototype your project. I used a 24 pixel neopixel ring, some buttons and some LEDS. I recomend using an arduino UNO for prototyping, however that is only a personal preference.
+2. Then, you will want to write the code for it. Although you can go ahead and use my code, I strongly sugest that you try to write the code yourself.
+3. Time to design your lightsaber (will update when I get to this step...)
