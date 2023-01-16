@@ -9,7 +9,7 @@ const int NUM_LEDSF = 24; // Front strip LED_COUNT
 // Change 144 on the finished version, 24 on "test NeoPixel".
 const int NUM_LEDSB = 144; // Back strip LED_COUNT
 
-const int BRIGHTNESS = 64;
+const int BRIGHTNESS = 10;
 
 CRGB ledsF[NUM_LEDSF];
 CRGB ledsB[NUM_LEDSB];
@@ -56,6 +56,13 @@ int blueTip;
 int redDef;
 int greenDef;
 int blueDef;
+
+/*
+// Forth color values, for fade effect
+int redFade = redDef;
+int greenFade = greenDef;
+int blueFade = blueDef;
+*/
 
 // Int for which color is chosen
 int colormode;
@@ -240,9 +247,9 @@ void setColor() {
     greenTip = 30;
     blueTip = 0;
     // Third color
-    redDef = 30;
+    redDef = 200;
     greenDef = 255;
-    blueDef = 80;
+    blueDef = 200;
     // Changes Delay back to normal
     DELAYVAL = 10;
 
@@ -332,6 +339,11 @@ void setColor() {
 
 void blasterDeflect() {
 
+  // Forth color values, for fade effect
+  int redFade = redDef;
+  int greenFade = greenDef;
+  int blueFade = blueDef;
+
   randomNumber = random(minStartPos, maxStartPos);
   Serial.println(randomNumber);
   Serial.println("How Shocking!");
@@ -343,10 +355,21 @@ void blasterDeflect() {
     delay(0);
   }
   delay(500);
-  for(int j=randomNumber; j<randomNumber + 5; j++ ) {
-    ledsF[j].setRGB( red, green, blue);
-    ledsB[j].setRGB( red, green, blue);
+  while (!(redFade == red) || !(greenFade == green) || !(blueFade == blue)){  
+    if (redFade > red){
+      redFade --;
+    }
+    if (greenFade > green){
+      greenFade --;
+    }
+    if (blueFade > blue){
+      blueFade --;
+    }
+    for(int j=randomNumber; j<randomNumber + 5; j++ ) {
+    ledsF[j].setRGB( redFade, greenFade, blueFade);
+    ledsB[j].setRGB( redFade, greenFade, blueFade);
     FastLED.show();
+    }
     delay(0);
   }  
 }
