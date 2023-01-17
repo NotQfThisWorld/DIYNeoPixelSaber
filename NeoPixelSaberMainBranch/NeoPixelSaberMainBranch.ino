@@ -355,15 +355,25 @@ void blasterDeflect() {
     delay(0);
   }
   delay(500);
-  while (!(redFade == red) || !(greenFade == green) || !(blueFade == blue)){  
+  while (!(redFade == red) || !(greenFade == green) || !(blueFade == blue)){ 
+
     if (redFade > red){
-      redFade --;
+      redFade = redFade - 10;
     }
     if (greenFade > green){
-      greenFade --;
+      greenFade = greenFade - 10;
     }
     if (blueFade > blue){
-      blueFade --;
+      blueFade = blueFade - 10;
+    }
+    if (redFade < red) {
+      redFade = red;
+    }
+    if (greenFade < green){
+      greenFade = green;      
+    }
+    if (blueFade < blue){
+      blueFade = blue;
     }
     for(int j=randomNumber; j<randomNumber + 5; j++ ) {
     ledsF[j].setRGB( redFade, greenFade, blueFade);
