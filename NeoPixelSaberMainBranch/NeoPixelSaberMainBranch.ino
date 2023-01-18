@@ -1,3 +1,4 @@
+#include <ezBuzzer.h>
 #include <FastLED.h>
 
 const int DATA_PINF = 12;      // Front strip PIN
@@ -75,13 +76,20 @@ const int minStartPos = 5;
 // String for which color is selected
 String color;
 
+// SOUND EFFECT SETUP
+
+const int buzPin = 6;
+
+ezBuzzer buzzer(buzPin); // ezBuzzer object attached to buzPin
+
+
+// END OFF SOUND EFFECT SETUP
+
+
 void setup() {
 
   // *** Debugging ***
   Serial.begin(9600);
-
-  // Defining shockPin as INPUT  
-  pinMode(shockPin, INPUT);
 
   FastLED.addLeds<NEOPIXEL, DATA_PINF>(ledsF, NUM_LEDSF); // Start Front LEDs
   FastLED.addLeds<NEOPIXEL, DATA_PINB>(ledsB, NUM_LEDSB); // Start Back LEDs
@@ -131,6 +139,8 @@ void loop() {
 
       // Tip is now On
       tipChange = ! tipChange;
+
+      
     }
     else if (actionBtnState == LOW && !tipChange) { // Checks if actionbutton is not pressed, and if tipchange is false. Turns of tip if both are false
 
@@ -143,7 +153,7 @@ void loop() {
       analogWrite(bluePin, blue);
 
       // Tip is now Off
-      tipChange = ! tipChange;      
+      tipChange = ! tipChange;
 
     }
     if (shockState == LOW) { // Checks if the knock switch has been disturbed. Runs blasterDeflect function if true.
@@ -158,11 +168,10 @@ void startBlade(int red, int green, int blue) { // Startanimation for blade
 
   for(int i=0; i<NUM_LEDSF; i++) { // For each pixel...
 
-      ledsF[i].setRGB( red, green, blue);
-      ledsB[i].setRGB( red, green, blue);
-      FastLED.show();
+    ledsF[i].setRGB( red, green, blue);
+    ledsB[i].setRGB( red, green, blue);
+    FastLED.show();
 
-    
     delay(DELAYVAL); // Pause before next pass through loop
   }
   
@@ -191,9 +200,9 @@ void retractBlade() { // Retract animation for blade
   // Turns off all leds, one by one
   for(int i=NUM_LEDSF; i--;) {
 
-      ledsF[i] = CRGB::Black; 
-      ledsB[i] = CRGB::Black; 
-      FastLED.show();
+    ledsF[i] = CRGB::Black; 
+    ledsB[i] = CRGB::Black; 
+    FastLED.show();
 
     delay(DELAYVAL);
   }
@@ -205,6 +214,8 @@ void retractBlade() { // Retract animation for blade
 
   // *** Debugging ***
   Serial.println("Blade retracted");
+
+  noTone(buzPin); // Turn off On-sound
   
 }
 
@@ -398,5 +409,5 @@ void blasterDeflect() { // Blaster Deflect Effect
     FastLED.show();
     }
     delay(0);
-  }  
+  }
 }
