@@ -9,7 +9,9 @@ const int NUM_LEDSF = 24; // Front strip LED_COUNT
 // Change 144 on the finished version, 24 on "test NeoPixel".
 const int NUM_LEDSB = 144; // Back strip LED_COUNT
 
+// Brigthness
 const int BRIGHTNESS = 10;
+// Change to higher value when done testing. MUST NOT BE TO HIGH! (Draws more current)
 
 CRGB ledsF[NUM_LEDSF];
 CRGB ledsB[NUM_LEDSB];
@@ -24,6 +26,7 @@ const int actionButton = 4;
 const int shockPin = 5;
 // Nano: 9
 
+// State values for different sensor readings (either HIGH or LOW)
 int shockState;
 int actionBtnState;
 int igniteBtnState;
@@ -31,8 +34,10 @@ int igniteBtnState;
 int CheckSwitch=1;  // variable for reading the current SwitchPin status
 int LastCheck=1;  // variable for keeping track of SwitchPin
 
+// Boolean to check if blade is on or not
 bool bladeOff = false;
 
+// Boolean to check if tip is different color or not
 bool tipChange = false;
 
 const int redPin = 11;
@@ -57,13 +62,6 @@ int redDef;
 int greenDef;
 int blueDef;
 
-/*
-// Forth color values, for fade effect
-int redFade = redDef;
-int greenFade = greenDef;
-int blueFade = blueDef;
-*/
-
 // Int for which color is chosen
 int colormode;
 
@@ -82,6 +80,7 @@ void setup() {
   // *** Debugging ***
   Serial.begin(9600);
 
+  // Defining shockPin as INPUT  
   pinMode(shockPin, INPUT);
 
   FastLED.addLeds<NEOPIXEL, DATA_PINF>(ledsF, NUM_LEDSF); // Start Front LEDs
@@ -94,6 +93,7 @@ void setup() {
 
 void loop() {
   
+  // State values determined by value comming from buttons/shock sensor
   shockState = digitalRead(shockPin);
   igniteBtnState = digitalRead(igniteButton);
   actionBtnState = digitalRead(actionButton);
@@ -119,27 +119,34 @@ void loop() {
       retractBlade();
 
     }
-    else if (actionBtnState == HIGH && tipChange) {
-    
+    else if (actionBtnState == HIGH && tipChange) { // Checks if actionbutton is pressed, and tipchange is true. Turns on tip if both true
+
+      // *** Debugging ***
       Serial.println("TipDrag");
+
+      // Writes tipdrag colors to tip
       analogWrite(redPin, redTip);
       analogWrite(greenPin, greenTip);
       analogWrite(bluePin, blueTip);
+
+      // Tip is now On
       tipChange = ! tipChange;
     }
+    else if (actionBtnState == LOW && !tipChange) { // Checks if actionbutton is not pressed, and if tipchange is false. Turns of tip if both are false
 
-    else if (actionBtnState == LOW && !tipChange) {
-    
+      // *** Debugging ***
       Serial.println("TipDragStopped");
+
+      // Writes tip colors back to normal
       analogWrite(redPin, red);
       analogWrite(greenPin, green);
       analogWrite(bluePin, blue);
 
+      // Tip is now Off
       tipChange = ! tipChange;      
 
     }
-    delay(1);
-    if (digitalRead(shockPin) == LOW) { // Checks if the knock switch has been disturbed. Runs blasterDeflect function if true.
+    if (shockState == LOW) { // Checks if the knock switch has been disturbed. Runs blasterDeflect function if true.
 
       blasterDeflect();
 
@@ -147,7 +154,7 @@ void loop() {
   }    
 }
 
-void startBlade(int red, int green, int blue) {
+void startBlade(int red, int green, int blue) { // Startanimation for blade
 
   for(int i=0; i<NUM_LEDSF; i++) { // For each pixel...
 
@@ -165,7 +172,8 @@ void startBlade(int red, int green, int blue) {
   analogWrite(greenPin, green);
   analogWrite(bluePin, blue);
   
-  bladeOff = ! bladeOff;
+  // Blade is now On
+  bladeOff = ! bladeOff; 
   delay(10);
   
   // *** Debugging ***
@@ -173,13 +181,14 @@ void startBlade(int red, int green, int blue) {
   
 }
 
-void retractBlade() {
+void retractBlade() { // Retract animation for blade
 
   // Turn off end-LED
   analogWrite(redPin, 0);
   analogWrite(greenPin, 0);
   analogWrite(bluePin, 0);
 
+  // Turns off all leds, one by one
   for(int i=NUM_LEDSF; i--;) {
 
       ledsF[i] = CRGB::Black; 
@@ -188,7 +197,10 @@ void retractBlade() {
 
     delay(DELAYVAL);
   }
+
+  // Blade is now Off
   bladeOff = ! bladeOff;
+
   delay(10);
 
   // *** Debugging ***
@@ -337,13 +349,14 @@ void setColor() {
   Serial.println(color);
 }
 
-void blasterDeflect() {
+void blasterDeflect() { // Blaster Deflect Effect
 
   // Forth color values, for fade effect
   int redFade = redDef;
   int greenFade = greenDef;
   int blueFade = blueDef;
 
+  // Chooses a random position for the deflect animation
   randomNumber = random(minStartPos, maxStartPos);
   Serial.println(randomNumber);
   Serial.println("How Shocking!");
@@ -354,19 +367,21 @@ void blasterDeflect() {
     FastLED.show();
     delay(0);
   }
-  delay(500);
-  while (!(redFade == red) || !(greenFade == green) || !(blueFade == blue)){ 
+  delay(100);
+  while (!(redFade == red) || !(greenFade == green) || !(blueFade == blue)){ // While "color"Fade isn't the same as the original color:
 
     if (redFade > red){
-      redFade = redFade - 10;
+      redFade = redFade - 10; // Remove 10 from redFade value
     }
     if (greenFade > green){
-      greenFade = greenFade - 10;
+      greenFade = greenFade - 10; // Remove 10 from greenFade value
     }
     if (blueFade > blue){
-      blueFade = blueFade - 10;
+      blueFade = blueFade - 10; // Remove 10 from blueFade value
     }
-    if (redFade < red) {
+    
+    // If removed to much, reset color to the original color
+    if (redFade < red) { 
       redFade = red;
     }
     if (greenFade < green){
@@ -375,6 +390,8 @@ void blasterDeflect() {
     if (blueFade < blue){
       blueFade = blue;
     }
+
+    // Write the new fade colors to the deflect area    
     for(int j=randomNumber; j<randomNumber + 5; j++ ) {
     ledsF[j].setRGB( redFade, greenFade, blueFade);
     ledsB[j].setRGB( redFade, greenFade, blueFade);
