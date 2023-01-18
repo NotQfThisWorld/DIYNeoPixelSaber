@@ -40,6 +40,9 @@ bool bladeOff = false;
 // Boolean to check if tip is different color or not
 bool tipChange = false;
 
+const int buzPin = 6;
+// Nano: UNKOWN
+
 const int redPin = 11;
 // Nano: 3
 const int greenPin = 10;
@@ -75,13 +78,31 @@ const int minStartPos = 5;
 // String for which color is selected
 String color;
 
+// Pitch for blade on
+long pitchOn = 80;
+
+// Pitch for on/off animation
+long pitchAni;
+
+// Pitch difference for on/off animation
+long pitchDif = 20;
+
+// Pitch for start of on/off animation
+long pitchOriAni = 500;
+
+// Pitch difference for deflect animation
+long pitchDef = 300;
+
+
+
+
 void setup() {
 
   // *** Debugging ***
   Serial.begin(9600);
 
-  // Defining shockPin as INPUT  
-  pinMode(shockPin, INPUT);
+  // Define buzPin as OUTPUT
+  pinMode(buzPin, OUTPUT);
 
   FastLED.addLeds<NEOPIXEL, DATA_PINF>(ledsF, NUM_LEDSF); // Start Front LEDs
   FastLED.addLeds<NEOPIXEL, DATA_PINB>(ledsB, NUM_LEDSB); // Start Back LEDs
@@ -129,8 +150,12 @@ void loop() {
       analogWrite(greenPin, greenTip);
       analogWrite(bluePin, blueTip);
 
+
+
       // Tip is now On
       tipChange = ! tipChange;
+
+      tone(buzPin, pitchOn + pitchDif);
     }
     else if (actionBtnState == LOW && !tipChange) { // Checks if actionbutton is not pressed, and if tipchange is false. Turns of tip if both are false
 
@@ -143,7 +168,9 @@ void loop() {
       analogWrite(bluePin, blue);
 
       // Tip is now Off
-      tipChange = ! tipChange;      
+      tipChange = ! tipChange;
+
+      tone(buzPin, pitchOn); // Go back to pitch on sound      
 
     }
     if (shockState == LOW) { // Checks if the knock switch has been disturbed. Runs blasterDeflect function if true.
@@ -156,13 +183,18 @@ void loop() {
 
 void startBlade(int red, int green, int blue) { // Startanimation for blade
 
+  pitchAni = pitchOriAni;
+
   for(int i=0; i<NUM_LEDSF; i++) { // For each pixel...
 
-      ledsF[i].setRGB( red, green, blue);
-      ledsB[i].setRGB( red, green, blue);
-      FastLED.show();
+    ledsF[i].setRGB( red, green, blue);
+    ledsB[i].setRGB( red, green, blue);
+    FastLED.show();
 
-    
+    // Sound Effect
+    tone(buzPin, pitchAni);
+    pitchAni = pitchAni - pitchDif;
+
     delay(DELAYVAL); // Pause before next pass through loop
   }
   
@@ -178,6 +210,8 @@ void startBlade(int red, int green, int blue) { // Startanimation for blade
   
   // *** Debugging ***
   Serial.println("Blade opened");
+
+  tone(buzPin, pitchOn); // Turn on On-Sound
   
 }
 
@@ -191,9 +225,13 @@ void retractBlade() { // Retract animation for blade
   // Turns off all leds, one by one
   for(int i=NUM_LEDSF; i--;) {
 
-      ledsF[i] = CRGB::Black; 
-      ledsB[i] = CRGB::Black; 
-      FastLED.show();
+    ledsF[i] = CRGB::Black; 
+    ledsB[i] = CRGB::Black; 
+    FastLED.show();
+
+    // Sound Effect
+    tone(buzPin, pitchAni);
+    pitchAni = pitchAni + pitchDif;
 
     delay(DELAYVAL);
   }
@@ -205,6 +243,8 @@ void retractBlade() { // Retract animation for blade
 
   // *** Debugging ***
   Serial.println("Blade retracted");
+
+  noTone(buzPin); // Turn off On-sound
   
 }
 
@@ -361,6 +401,7 @@ void blasterDeflect() { // Blaster Deflect Effect
   Serial.println(randomNumber);
   Serial.println("How Shocking!");
 
+  tone(buzPin, pitchDef);
   for(int j=randomNumber; j<randomNumber + 5; j++ ) {
     ledsF[j].setRGB( redDef, greenDef, blueDef);
     ledsB[j].setRGB( redDef, greenDef, blueDef);
@@ -398,5 +439,7 @@ void blasterDeflect() { // Blaster Deflect Effect
     FastLED.show();
     }
     delay(0);
-  }  
+  }
+
+  tone(buzPin, pitchOn); // Go back to pitch on sound 
 }
