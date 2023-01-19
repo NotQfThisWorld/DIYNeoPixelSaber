@@ -21,7 +21,6 @@ int DELAYVAL = 10; //Milliseconds between each pixel on the blade lighting up.
 
 const int igniteButton = 2;
 // Nano: 2
-
 const int actionButton = 4;
 // Nano: 4
 const int shockPin = 5;
@@ -36,7 +35,7 @@ int CheckSwitch=1;  // variable for reading the current SwitchPin status
 int LastCheck=1;  // variable for keeping track of SwitchPin
 
 // Boolean to check if blade is on or not
-bool bladeOff = false;
+bool bladeOff = true;
 
 // Boolean to check if tip is different color or not
 bool tipChange = false;
@@ -82,6 +81,63 @@ const int buzPin = 6;
 
 ezBuzzer buzzer(buzPin); // ezBuzzer object attached to buzPin
 
+// Pitch values for idle on animation
+int pitchAni1;
+int pitchAni2;
+int pitchAni3;
+int pitchAni4;
+int pitchAni5;
+
+// NoteDurations for Animated Sound effects
+int dur1;
+int dur2;
+int dur3;
+int dur4;
+int dur5;
+
+// Max/Min values for durations and pitches
+
+int minDur = 1;
+int maxDur = 8;
+
+int minPitch = 100;
+int maxPitch = 1500;
+
+// Ignition animtaion
+int onAniSound[] = {
+
+
+
+
+  
+};
+
+int noteDurOn [] = {
+
+
+
+
+};
+
+
+// Retract animation
+int offAniSound [] = {
+
+
+
+
+};
+
+int noteDurOff [] = {
+
+
+
+
+};
+
+int onLength;
+int offLength;
+int idleLength;
 
 // END OFF SOUND EFFECT SETUP
 
@@ -97,9 +153,14 @@ void setup() {
 
   setColor(); // Runs the Set Color program once, to make sure a color is selected before the user powers up his saber.
 
+  onLength = sizeof(noteDurOn) / sizeof(int);
+  offLength = sizeof(noteDurOff) / sizeof(int);
+
 }
 
 void loop() {
+  
+  buzzer.loop();
   
   // State values determined by value comming from buttons/shock sensor
   shockState = digitalRead(shockPin);
@@ -109,7 +170,7 @@ void loop() {
   if (bladeOff) {
     if (igniteBtnState == HIGH) { // Checks if the blade should be on. Starts the blade if true
       // Start Blade
-      startBlade(red, green, blue);
+      igniteBlade(red, green, blue);
 
 
     }
@@ -160,11 +221,15 @@ void loop() {
 
       blasterDeflect();
 
+    }  
+    if (buzzer.getState() == BUZZER_IDLE) {
+        
+        idleSoundAnimation();
     }
   }    
 }
 
-void startBlade(int red, int green, int blue) { // Startanimation for blade
+void igniteBlade(int red, int green, int blue) { // Startanimation for blade
 
   for(int i=0; i<NUM_LEDSF; i++) { // For each pixel...
 
@@ -192,6 +257,10 @@ void startBlade(int red, int green, int blue) { // Startanimation for blade
 
 void retractBlade() { // Retract animation for blade
 
+if (buzzer.getState() != BUZZER_IDLE) {
+      buzzer.stop() ; // stop
+    }
+
   // Turn off end-LED
   analogWrite(redPin, 0);
   analogWrite(greenPin, 0);
@@ -214,8 +283,6 @@ void retractBlade() { // Retract animation for blade
 
   // *** Debugging ***
   Serial.println("Blade retracted");
-
-  noTone(buzPin); // Turn off On-sound
   
 }
 
@@ -410,4 +477,32 @@ void blasterDeflect() { // Blaster Deflect Effect
     }
     delay(0);
   }
+}
+
+void idleSoundAnimation(){
+
+  dur1 = random(minDur, maxDur);
+  dur2 = random(minDur, maxDur);
+  dur3 = random(minDur, maxDur);
+  dur4 = random(minDur, maxDur);
+  dur5 = random(minDur, maxDur);
+
+  pitchAni1 = random(minPitch, maxPitch);
+  pitchAni2 = random(minPitch, maxPitch);
+  pitchAni3 = random(minPitch, maxPitch);
+  pitchAni4 = random(minPitch, maxPitch);
+  pitchAni5 = random(minPitch, maxPitch);
+
+  int noteDurIdle[] = {
+    dur1, dur2, dur3, dur4, dur5
+  };
+
+  int idleSound[] = {
+    pitchAni1, pitchAni2, pitchAni3, pitchAni4, pitchAni5,
+
+  };
+  
+  idleLength = sizeof(noteDurIdle) / sizeof(int);
+
+  buzzer.playMelody(idleSound, noteDurIdle, idleLength);
 }
