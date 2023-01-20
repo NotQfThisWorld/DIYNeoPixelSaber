@@ -1,4 +1,5 @@
 #include <ezBuzzer.h>
+#define FASTLED_ALLOW_INTERRUPTS 0
 #include <FastLED.h>
 
 const int DATA_PINF = 12;      // Front strip PIN
@@ -152,7 +153,10 @@ void setup() {
   FastLED.setBrightness(  BRIGHTNESS );  // Set Brightess
 
   setColor(); // Runs the Set Color program once, to make sure a color is selected before the user powers up his saber.
-
+  
+  // limit powerdraw to what the arduino/powersupply can supply
+  FastLED.setMaxPowerInVoltsAndMilliamps(5,1000); // (Volts,Millamps);
+  
   onLength = sizeof(noteDurOn) / sizeof(int);
   offLength = sizeof(noteDurOff) / sizeof(int);
 
