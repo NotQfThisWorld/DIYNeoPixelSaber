@@ -62,8 +62,9 @@ CRGB ledsB[NUM_LEDSB];
   int blastSize = 5;
 
 // Starting positions for blaster deflect
-  const int maxStartPos = NUM_LEDSF - blastSize + 5;
-  const int minStartPos = 5;
+  const int fromEgdePos = 5;
+  const int minStartPos = fromEgdePos;
+  const int maxStartPos = NUM_LEDSF - blastSize - fromEgdePos;
 
 // String for which color is selected
   String color;
@@ -305,12 +306,12 @@ void setColor() {
 
     case 5: // Magenta
     // Primary color
-      red = 220;
+      red = 255;
       green = 0;
       blue = 255;
     // Secondary color
       redTip = 255;
-      greenTip = 0;
+      greenTip = 50;
       blueTip = 0;
     // Third color
       redDef = 240;
@@ -328,7 +329,7 @@ void setColor() {
       blue = 255;
     // Secondary color
       redTip = 255;
-      greenTip = 0;
+      greenTip = 50;
       blueTip = 0;
     // Third color
       redDef = 255;
