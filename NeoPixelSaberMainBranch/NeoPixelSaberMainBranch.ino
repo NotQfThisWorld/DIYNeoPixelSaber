@@ -36,6 +36,10 @@ CRGB ledsB[NUM_LEDSB];
   const int greenPin = 10;  // Nano: 5
   const int bluePin = 9;  // Nano: 6
 
+// Power-Button-Indicator LED Pins (if you use them.)
+  const int redIndi = 7; // Nano: 7
+  const int greenIndi = 8; // Nano: 8
+
 // COLOR VALUES
 
   // Primary color values, for blade
@@ -98,6 +102,10 @@ void setup() {
   // Defining shockPin as INPUT  
     pinMode(shockPin, INPUT);
 
+  // Defining Led Indicator pins as OUTPUTs
+    pinMode(redIndi, OUTPUT);
+    pinMode(greenIndi, OUTPUT);
+
   // Start leds and set brightness
     FastLED.addLeds<NEOPIXEL, DATA_PINF>(ledsF, NUM_LEDSF); // Start Front LEDs
     FastLED.addLeds<NEOPIXEL, DATA_PINB>(ledsB, NUM_LEDSB); // Start Back LEDs
@@ -118,6 +126,8 @@ void setup() {
 
   setColor(); // Runs the Set Color program once, to make sure a color is selected before the user powers up his saber.
 
+  // Turn on Red indicator, to show that the lightsaber is powered on and ready to use
+    digitalWrite(redIndi, HIGH);
 }
 
 void loop() {
@@ -127,22 +137,22 @@ void loop() {
     igniteBtnState = digitalRead(igniteButton);
     actionBtnState = digitalRead(actionButton);
 
-  if (bladeOff) {
-    if (igniteBtnState == HIGH) { // Checks if the blade should be on. Starts the blade if true
+  if (bladeOff) { // If blade off...
+    if (igniteBtnState == HIGH) { //  Starts the blade if the ignite button is pressed.
 
       // Start Blade
         startBlade(red, green, blue);
 
 
     }
-    else if (actionBtnState == HIGH) {
+    else if (actionBtnState == HIGH) { // Runs the setcolor function if the action button is pressed.
 
         setColor(); // Cycle to another color
 
     }  
   }
-  else {
-    if (igniteBtnState == LOW) { // Checks if the blade should be on. Retracts the blade if false
+  else { // If blade is on...
+    if (igniteBtnState == HIGH) { // Retracts the blade if the ignite button is pressed.
 
       // Retract Blade
         retractBlade();
@@ -176,7 +186,7 @@ void loop() {
         tipChange = ! tipChange;      
 
     }
-    if (shockState == LOW) { // Checks if the knock switch has been disturbed. Runs blasterDeflect function if true.
+    else if (shockState == LOW) { // Checks if the knock switch has been disturbed. Runs blasterDeflect function if true.
 
       blasterDeflect();
 
@@ -209,12 +219,20 @@ void startBlade(int red, int green, int blue) { // Startanimation for blade
     bladeOff = ! bladeOff; 
   delay(10);
   
+  // Turn on green indicator, and turn off red indicator
+    digitalWrite(redIndi, LOW);
+    digitalWrite(greenIndi, HIGH);
+
   // *** Debugging ***
     Serial.println("Blade opened");
   
 }
 
 void retractBlade() { // Retract animation for blade
+
+  // Turn off green indicator, and turn on red indicator
+    digitalWrite(redIndi, HIGH);
+    digitalWrite(greenIndi, LOW);
 
   // Turn off end-LED
     analogWrite(redPin, 0);
@@ -387,6 +405,7 @@ void setColor() {
 
   }
   delay(300);
+  
   // *** Debugging ***
     Serial.print("Color is now: ");
     Serial.println(color);
@@ -430,16 +449,16 @@ void blasterDeflect() { // Blaster Deflect Effect
 void flickerAnimation() {
 
   // Random numbers for low, medium and high flicker
-    randomNumLow = random(0, 2);
-    randomNumMid = random(0, 3);
-    randomNumHigh = random(0, 6);
+    randomNumLow = random(1, 4);
+    randomNumMid = random(1, 6);
+    randomNumHigh = random(1, 8);
 
   // Choose flicker intensity range (determined by flickerRange variable, set in setColor() function)
   
     switch (flickerRange) {
 
       case 0: // Low flicker
-        flickerIntensity = random(2, 4);
+        flickerIntensity = random(0, 2);
 
       // *** Debugging ***
         Serial.println("Low");
@@ -447,7 +466,7 @@ void flickerAnimation() {
       break;
 
       case 1: // Medium flicker
-        flickerIntensity = random(1, 5);
+        flickerIntensity = random(0, 3);
 
       // *** Debugging ***
         Serial.println("Medium");
@@ -455,7 +474,7 @@ void flickerAnimation() {
       break;
         
       case 2: // High flicker
-        flickerIntensity = random(0, 6);
+        flickerIntensity = random(0, 4);
 
       // *** Debugging ***
         Serial.println("High");
@@ -469,30 +488,22 @@ void flickerAnimation() {
     switch (flickerIntensity) {
 
       case 0:
-        flickerBrightness = BRIGHTNESS - randomNumHigh;
-      break;
-
-      case 1:
-        flickerBrightness = BRIGHTNESS - randomNumMid;
-      break;
-
-      case 2:
-        flickerBrightness = BRIGHTNESS - randomNumLow;
-      break;
-
-      case 3:
         flickerBrightness = BRIGHTNESS;
       break;
 
-      case 4:
+      case 1:
         flickerBrightness = BRIGHTNESS + randomNumLow;
       break;
 
-      case 5:
+      case 2:
+        flickerBrightness = BRIGHTNESS + randomNumLow;
+      break;
+
+      case 3:
         flickerBrightness = BRIGHTNESS + randomNumMid;
       break;
 
-      case 6:
+      case 4:
         flickerBrightness = BRIGHTNESS + randomNumHigh;
       break;
            
