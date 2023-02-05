@@ -37,8 +37,14 @@ CRGB ledsB[NUM_LEDSB];
   const int bluePin = 9;  // Nano: 6
 
 // Power-Button-Indicator LED Pins (if you use them.)
-  const int redIndi = 7; // Nano: 7
-  const int greenIndi = 8; // Nano: 8
+  const int redIndi = 8; // Nano: 7
+  const int greenIndi = 7; // Nano: 8
+
+// Note about the indicator LEDS:
+  /* For some or other weird reason, the green and red input are switched (marked wrong I guess)
+     But, they also behave quite weird too. When for example red is on, if I write a On signal to
+     green, both leds turns off. If I write a off signal to red, while red is on, the green led
+     turns on. Please feel free to change the code if you do not enconter the same problem. */
 
 // COLOR VALUES
 
@@ -127,7 +133,7 @@ void setup() {
   setColor(); // Runs the Set Color program once, to make sure a color is selected before the user powers up his saber.
 
   // Turn on Red indicator, to show that the lightsaber is powered on and ready to use
-    digitalWrite(redIndi, HIGH);
+    digitalWrite(redIndi, 1);
 }
 
 void loop() {
@@ -199,6 +205,9 @@ void loop() {
 
 void startBlade(int red, int green, int blue) { // Startanimation for blade
 
+  // Turn off red indicator, to turn both leds on (see line 43)
+    digitalWrite(redIndi, 0);
+
   for(int i=0; i<NUM_LEDSF; i++) { // Starts each pixel with the set color, with DELAYVAL between each
 
     ledsF[i].setRGB( red, green, blue);
@@ -219,8 +228,7 @@ void startBlade(int red, int green, int blue) { // Startanimation for blade
     bladeOff = ! bladeOff; 
   delay(10);
   
-  // Turn on green indicator, and turn off red indicator
-    digitalWrite(redIndi, LOW);
+  // Turn on green indicator
     digitalWrite(greenIndi, HIGH);
 
   // *** Debugging ***
@@ -230,9 +238,8 @@ void startBlade(int red, int green, int blue) { // Startanimation for blade
 
 void retractBlade() { // Retract animation for blade
 
-  // Turn off green indicator, and turn on red indicator
-    digitalWrite(redIndi, HIGH);
-    digitalWrite(greenIndi, LOW);
+  // Turn off green indicator, to turn both Leds on (see line 43)
+    digitalWrite(greenIndi, 0);
 
   // Turn off end-LED
     analogWrite(redPin, 0);
@@ -256,13 +263,19 @@ void retractBlade() { // Retract animation for blade
 
   delay(10);
 
+  // Turn on red indicator:
+    digitalWrite(redIndi, 1); 
+
   // *** Debugging ***
     Serial.println("Blade retracted");
   
 }
 
-void setColor() {
+void setColor() { // Sets color
 
+  // Write on to green indicator to turn both off (see line 43);
+    digitalWrite(greenIndi, 1);
+  
   DELAYVAL = 10;  // Sets DELAYVAL to 10 (default). Can be changed in switch statement.
   flickerRange = 0; // Sets flickerRange to 0 (default)(this does not mean that it does not flicker). Can be changed in switch statement.
 
@@ -405,6 +418,9 @@ void setColor() {
 
   }
   delay(300);
+
+  // Turn on led indicator after color is chosen
+    digitalWrite(greenIndi, 0);
   
   // *** Debugging ***
     Serial.print("Color is now: ");
@@ -446,7 +462,7 @@ void blasterDeflect() { // Blaster Deflect Effect
   }
 }
 
-void flickerAnimation() {
+void flickerAnimation() { // Flicker animation for variation
 
   // Random numbers for low, medium and high flicker
     randomNumLow = random(1, 4);
@@ -518,7 +534,7 @@ void flickerAnimation() {
 
 }
 
-void fadeValues(int fadestep) {
+void fadeValues(int fadestep) { // Changes *color*fade values
 
   if (redFade > red){
     redFade = redFade - fadestep; // Remove 10 from redFade value
