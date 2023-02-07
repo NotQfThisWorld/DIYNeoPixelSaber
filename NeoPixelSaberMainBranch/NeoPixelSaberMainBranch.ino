@@ -1,8 +1,8 @@
 #include <FastLED.h>
 
 // Led Strip Pins
-  const int DATA_PINF = 12;      // Front strip PIN // Nano: 7
-  const int DATA_PINB = 13;      // Back strip PIN  // Nano: 8
+  const int DATA_PINF = 12;      // Front strip PIN // Nano: 10
+  const int DATA_PINB = 13;      // Back strip PIN  // Nano: 11
 
 // Number of Leds
   const int NUM_LEDSF = 24; // Front strip LED_COUNT  // Change 144 on the finished version, 24 on "test NeoPixel".
@@ -37,8 +37,8 @@ CRGB ledsB[NUM_LEDSB];
   const int bluePin = 9;  // Nano: 6
 
 // Power-Button-Indicator LED Pins (if you use them.)
-  const int redIndi = 8; // Nano: 7
-  const int greenIndi = 7; // Nano: 8
+  const int redIndi = 8; // Nano: 8
+  const int greenIndi = 7; // Nano: 7
 
 // Note about the indicator LEDS:
   /* For some or other weird reason, the green and red input are switched (marked wrong I guess)
