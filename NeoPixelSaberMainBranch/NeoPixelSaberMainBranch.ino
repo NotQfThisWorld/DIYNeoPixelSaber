@@ -9,7 +9,7 @@
   const int NUM_LEDSB = 144; // Back strip LED_COUNT
 
 // Brigthness
-  const int BRIGHTNESS = 10;  // Change to higher value when done testing. MUST NOT BE TO HIGH! (Draws more current)
+  const int BRIGHTNESS = 100;  // Change to higher value when done testing. MUST NOT BE TO HIGH! (Draws more current)
 
 CRGB ledsF[NUM_LEDSF];
 CRGB ledsB[NUM_LEDSB];
@@ -30,6 +30,7 @@ CRGB ledsB[NUM_LEDSB];
 // BOOLEANS
   bool bladeOff = true; // Boolean to check if blade is on or not
   bool tipChange = false; // Boolean to check if tip is different color or not
+  bool pulseDown; // Boolean to check if the blade is pulsing down or not
 
 // RGB LED PINS
   const int redPin = 11;  // Nano: 3
@@ -69,16 +70,10 @@ CRGB ledsB[NUM_LEDSB];
     int blueFade;
 
 // Int for which color is chosen
-  int colormode;
+  int modeCase;
 
-// RANDOM NUMBERS
-  // Random number for where to put the Blaster Deflect
-    int randomNumber;
-
-  // Random numbers for flickering
-    int randomNumLow;
-    int randomNumMid;
-    int randomNumHigh;
+// Random number for where to put the Blaster Deflect
+  int randomNumber;
 
 // How big the blasterdeflect area should be
   int blastSize = 5;
@@ -93,14 +88,18 @@ CRGB ledsB[NUM_LEDSB];
   const int maxStartPos = NUM_LEDSF - blastSize - fromEgdePos;
 
 // String for which color is selected
-  String color;
+  String modeName;
 
-// Flickering Light Variables
-  int flickerIntensity;
-  int flickerBrightness;
-  int flickerRange;
+// pulsinging Light Variables
+  int pulsingLowest;
+  int pulseStep;
+  int pulsingBrightness;
+  int pulseAmount;
 
 void setup() {
+
+  // PulsingBrightness should be the same as BRIGTHNESS when the blade starts up...
+    pulsingBrightness = BRIGHTNESS;  
 
   // *** Debugging ***
     Serial.begin(9600);
@@ -130,10 +129,11 @@ void setup() {
   // limit powerdraw to what the arduino/powersupply can supply
     FastLED.setMaxPowerInVoltsAndMilliamps(5,1000); // (Volts,Millamps);
 
-  setColor(); // Runs the Set Color program once, to make sure a color is selected before the user powers up his saber.
+  setMode(); // Runs the setMode program once, to make sure a color is selected before the user powers up his saber.
 
   // Turn on Red indicator, to show that the lightsaber is powered on and ready to use
     digitalWrite(redIndi, 1);
+    
 }
 
 void loop() {
@@ -151,9 +151,9 @@ void loop() {
 
 
     }
-    else if (actionBtnState == HIGH) { // Runs the setcolor function if the action button is pressed.
+    else if (actionBtnState == HIGH) { // Runs the setMode function if the action button is pressed.
 
-        setColor(); // Cycle to another color
+        setMode(); // Cycle to another color
 
     }  
   }
@@ -198,8 +198,8 @@ void loop() {
 
     }
     
-    // Flickering Light
-      flickerAnimation();
+    // Pulsing Light
+      pulsingAnimation();
   }  
 }
 
@@ -216,7 +216,7 @@ void startBlade(int red, int green, int blue) { // Startanimation for blade
 
     delay(DELAYVAL); // Pause before next pass through loop
     
-    flickerAnimation(); // Play flickeranimation, for more vareity
+    // pulsingAnimation(); // Play pulsingAnimation, for more vareity
   }
   
   // Turn on end-LED
@@ -255,7 +255,7 @@ void retractBlade() { // Retract animation for blade
 
     delay(DELAYVAL);
     
-    flickerAnimation(); // Play flickeranimation, for more vareity
+    // pulsingAnimation(); // Play pulsinganimation, for more vareity
   }
 
   // Blade is now Off
@@ -271,15 +271,17 @@ void retractBlade() { // Retract animation for blade
   
 }
 
-void setColor() { // Sets color
+void setMode() { // Sets Mode (colors, effect intensities etc.)
 
   // Write on to green indicator to turn both off (see line 43);
     digitalWrite(greenIndi, 1);
   
-  DELAYVAL = 10;  // Sets DELAYVAL to 10 (default). Can be changed in switch statement.
-  flickerRange = 0; // Sets flickerRange to 0 (default)(this does not mean that it does not flicker). Can be changed in switch statement.
+  // Defaults. Can and Will be changed in some switch cases.
+    DELAYVAL = 10;  // Sets DELAYVAL to 10 (default). Can be changed in switch statement.
+    pulseStep = 20; // Sets pulseStep to 20 (default)(this does not mean that it does not pulsing). Can be changed in switch statement.
+    pulseAmount = 2; // Sets pulseAmount to 2 (default). Can be changed in switch statement
 
-  switch (colormode) {
+  switch (modeCase) {
     case 0: // BLUE
       // Primary color
         red = 0;
@@ -294,8 +296,11 @@ void setColor() { // Sets color
         greenDef = 200;
         blueDef = 255;
 
-      color = "BLUE";
-      colormode++;
+      // pulsing Intensity Change
+        pulseAmount = 1;
+
+      modeName = "BLUE";
+      modeCase++;
     break;
 
     case 1: // RED
@@ -314,11 +319,12 @@ void setColor() { // Sets color
       // DELAYVAL Change
         DELAYVAL = 20;  // Changes delayval to make a more dramatic blade opening/retracting
 
-      // Flicker Intensity Change
-        flickerRange = 2; // Changes flickerRange since the red blade is kind of more "unstable"
+      // pulsing Intensity Change
+        pulseStep = 25;
+        pulseAmount = 8;
 
-      color = "RED";
-      colormode++;
+      modeName = "RED";
+      modeCase++;
     break;
 
     case 2: // GREEN
@@ -335,11 +341,11 @@ void setColor() { // Sets color
         greenDef = 255;
         blueDef = 200;
 
-      // Flicker Intensity Change
-        flickerRange = 1; // Changes flickerRange (don't know why, I just think it might work)
+      // pulsing Intensity Change
+        pulseStep = 10;
 
-      color = "GREEN";
-      colormode++;
+      modeName = "GREEN";
+      modeCase++;
     break;
 
     case 3: // GOLD
@@ -356,8 +362,8 @@ void setColor() { // Sets color
         greenDef = 200;
         blueDef = 180;
 
-      color = "GOLD";
-      colormode++;
+      modeName = "GOLD";
+      modeCase++;
     break;
 
     case 4: // AQUA
@@ -374,8 +380,8 @@ void setColor() { // Sets color
         greenDef = 255;
         blueDef = 255;
 
-      color = "AQUA";
-      colormode++;
+      modeName = "AQUA";
+      modeCase++;
     break;
 
     case 5: // Magenta
@@ -392,8 +398,8 @@ void setColor() { // Sets color
         greenDef = 230;
         blueDef = 255;
 
-      color = "Magenta";
-      colormode++;
+      modeName = "Magenta";
+      modeCase++;
     break;
 
     case 6: // PURPLE
@@ -412,8 +418,12 @@ void setColor() { // Sets color
       // DELAYVAL Change
         DELAYVAL = 20;  // Changes delayval to make a more dramatic blade opening/retracting
 
-      color = "PURPLE";
-      colormode = 0;
+      // pulsing Intensity Change
+        pulseStep = 15;
+        pulseAmount = 1;
+      
+      modeName = "PURPLE";
+      modeCase = 0;
     break;
 
   }
@@ -423,8 +433,8 @@ void setColor() { // Sets color
     digitalWrite(greenIndi, 0);
   
   // *** Debugging ***
-    Serial.print("Color is now: ");
-    Serial.println(color);
+    Serial.print("Selected Mode: ");
+    Serial.println(modeName);
 }
 
 void blasterDeflect() { // Blaster Deflect Effect
@@ -457,81 +467,39 @@ void blasterDeflect() { // Blaster Deflect Effect
       ledsB[j].setRGB( redFade, greenFade, blueFade);
       FastLED.show();
 
-      flickerAnimation(); // Play flickeranimation, for more vareity
+      // pulsingAnimation(); // Play pulsinganimation, for more vareity
     }
   }
 }
 
-void flickerAnimation() { // Flicker animation for variation
+void pulsingAnimation() { // Pulsing animation for variation
 
-  // Random numbers for low, medium and high flicker
-    randomNumLow = random(1, 4);
-    randomNumMid = random(1, 6);
-    randomNumHigh = random(1, 8);
+  pulsingLowest = BRIGHTNESS - pulseStep; // pulsingLowest is BRIGHTNESS - pulseStep. PulseStep is set in setMode program.
 
-  // Choose flicker intensity range (determined by flickerRange variable, set in setColor() function)
-  
-    switch (flickerRange) {
-
-      case 0: // Low flicker
-        flickerIntensity = random(0, 2);
-
-      // *** Debugging ***
-        Serial.println("Low");
-                
-      break;
-
-      case 1: // Medium flicker
-        flickerIntensity = random(0, 3);
-
-      // *** Debugging ***
-        Serial.println("Medium");
-        
-      break;
-        
-      case 2: // High flicker
-        flickerIntensity = random(0, 4);
-
-      // *** Debugging ***
-        Serial.println("High");
-
-      break;      
-
+  if (pulseDown) {
+    for (int j=0; j<pulseAmount; j++ ) {
+      pulsingBrightness --;
     }
-
-  // Switch to the new randomly selected brightness value
-
-    switch (flickerIntensity) {
-
-      case 0:
-        flickerBrightness = BRIGHTNESS;
-      break;
-
-      case 1:
-        flickerBrightness = BRIGHTNESS + randomNumLow;
-      break;
-
-      case 2:
-        flickerBrightness = BRIGHTNESS + randomNumLow;
-      break;
-
-      case 3:
-        flickerBrightness = BRIGHTNESS + randomNumMid;
-      break;
-
-      case 4:
-        flickerBrightness = BRIGHTNESS + randomNumHigh;
-      break;
-           
+    if (pulsingBrightness < pulsingLowest) {
+      pulseDown = ! pulseDown;
     }
+  }
+  else {
+    for (int j=0; j<pulseAmount; j++ ) {
+      pulsingBrightness ++;
+    }
+    if (pulsingBrightness >= BRIGHTNESS) {
+      pulseDown = ! pulseDown;
+    }
+  }
+
   // Send updated brightness
-    FastLED.setBrightness(flickerBrightness);
+    FastLED.setBrightness(pulsingBrightness);
     FastLED.show();
   
   // *** Debugging ***
-    Serial.println(flickerBrightness);
+    Serial.println(pulsingBrightness);
   
-
 }
 
 void fadeValues(int fadestep) { // Changes *color*fade values
