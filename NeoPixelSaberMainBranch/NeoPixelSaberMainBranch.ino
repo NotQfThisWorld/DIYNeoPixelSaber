@@ -467,7 +467,7 @@ void blasterDeflect() { // Blaster Deflect Effect
       ledsB[j].setRGB( redFade, greenFade, blueFade);
       FastLED.show();
 
-      // pulsingAnimation(); // Play pulsinganimation, for more vareity
+      pulsingAnimation(); // Play pulsinganimation, for more vareity
     }
   }
 }
