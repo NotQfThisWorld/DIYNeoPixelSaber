@@ -144,7 +144,7 @@ void loop() {
     actionBtnState = digitalRead(actionButton);
 
   if (bladeOff) { // If blade off...
-    if (igniteBtnState == HIGH || shockState == LOW) { //  Starts the blade if the ignite button is pressed, or if the shocksensor is disturbed (enables stab ignition) :)
+    if (igniteBtnState == HIGH || shockState == LOW) { //  Starts the blade if the ignite button is pressed, or if the shocksensor is disturbed (enables stab ignition)
 
       // Start Blade
         startBlade(red, green, blue);
@@ -164,6 +164,13 @@ void loop() {
         retractBlade();
 
     }
+
+    else if (shockState == LOW) { // Checks if the knock switch has been disturbed. Runs blasterDeflect function if true.
+
+      blasterDeflect();
+
+    }
+
     else if (actionBtnState == HIGH && tipChange) { // Checks if actionbutton is pressed, and tipchange is true. Turns on tip if both true
 
       // *** Debugging ***
@@ -192,14 +199,10 @@ void loop() {
         tipChange = ! tipChange;      
 
     }
-    else if (shockState == LOW) { // Checks if the knock switch has been disturbed. Runs blasterDeflect function if true.
-
-      blasterDeflect();
-
-    }
-    
-    // Pulsing Light
-      pulsingAnimation();
+    else {
+      // Pulsing Light
+        pulsingAnimation();
+    }        
   }  
 }
 
@@ -273,7 +276,7 @@ void retractBlade() { // Retract animation for blade
 
 void setMode() { // Sets Mode (colors, effect intensities etc.)
 
-  //modeCase = 8; // Uncomment to use test new feature mode. See line 455 for more info.
+  //modeCase = 8; // Uncomment to use test new feature mode. See line 458 for more info.
 
   // Write on to green indicator to turn both off (see line 44);
     digitalWrite(greenIndi, 1);
@@ -452,7 +455,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
       modeCase = 0;
     break;
 
-    case 8: // Test new features! Uncomment line 276, and change line 452 from modeCase = 0; to modeCase ++;
+    case 8: // Test new features! Uncomment line 279, and change line 455 from modeCase = 0; to modeCase ++;
       // Primary color
         red = 200;
         green = 10;
