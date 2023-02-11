@@ -5,8 +5,8 @@
   const int DATA_PINB = 13;      // Back strip PIN  // Nano: 11
 
 // Number of Leds
-  const int NUM_LEDSF = 24; // Front strip LED_COUNT  // Change 144 on the finished version, 24 on "test NeoPixel".
-  const int NUM_LEDSB = 144; // Back strip LED_COUNT
+  const int NUM_LEDSF = 24; // Front strip LED_COUNT  // Change to (final led count) on the finished version, 24 on "test NeoPixel".
+  const int NUM_LEDSB = 24; // Back strip LED_COUNT
 
 // Brigthness
   const int BRIGHTNESS = 100;  // Change to higher value when done testing. MUST NOT BE TO HIGH! (Draws more current)
@@ -205,7 +205,7 @@ void loop() {
 
 void startBlade(int red, int green, int blue) { // Startanimation for blade
 
-  // Turn off red indicator, to turn both leds on (see line 43)
+  // Turn off red indicator, to turn both leds on (see line 44)
     digitalWrite(redIndi, 0);
 
   for(int i=0; i<NUM_LEDSF; i++) { // Starts each pixel with the set color, with DELAYVAL between each
@@ -238,7 +238,7 @@ void startBlade(int red, int green, int blue) { // Startanimation for blade
 
 void retractBlade() { // Retract animation for blade
 
-  // Turn off green indicator, to turn both Leds on (see line 43)
+  // Turn off green indicator, to turn both Leds on (see line 44)
     digitalWrite(greenIndi, 0);
 
   // Turn off end-LED
@@ -273,7 +273,9 @@ void retractBlade() { // Retract animation for blade
 
 void setMode() { // Sets Mode (colors, effect intensities etc.)
 
-  // Write on to green indicator to turn both off (see line 43);
+  //modeCase = 8; // Uncomment to use test new feature mode. See line 455 for more info.
+
+  // Write on to green indicator to turn both off (see line 44);
     digitalWrite(greenIndi, 1);
   
   // Defaults. Can and Will be changed in some switch cases.
@@ -366,7 +368,31 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
       modeCase++;
     break;
 
-    case 4: // AQUA
+    case 4: // ORANGE
+      // Primary color
+        red = 200;
+        green = 10;
+        blue = 0;
+      // Secondary color
+        redTip = 200;
+        greenTip = 50;
+        blueTip = 0;
+      // Third color
+        redDef = 255;
+        greenDef = 200;
+        blueDef = 100;
+      // DELAYVAL Change
+        DELAYVAL = 30;  // Changes delayval to make a more dramatic blade opening/retracting
+
+      // Pulsing Intensity Change
+        pulseStep = 30;
+        pulseAmount = 5;      
+
+        modeName = "ORANGE";
+        modeCase ++;
+    break;
+
+    case 5: // AQUA
       // Primary color
         red = 0;
         green = 200;
@@ -384,7 +410,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
       modeCase++;
     break;
 
-    case 5: // Magenta
+    case 6: // Magenta
       // Primary color
         red = 255;
         green = 0;
@@ -402,7 +428,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
       modeCase++;
     break;
 
-    case 6: // PURPLE
+    case 7: // PURPLE
       // Primary color
         red = 100;
         green = 0;
@@ -418,11 +444,35 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
       // DELAYVAL Change
         DELAYVAL = 20;  // Changes delayval to make a more dramatic blade opening/retracting
 
-      // pulsing Intensity Change
+      // Pulsing Intensity Change
         pulseStep = 15;
         pulseAmount = 1;
       
       modeName = "PURPLE";
+      modeCase = 0;
+    break;
+
+    case 8: // Test new features! Uncomment line 276, and change line 452 from modeCase = 0; to modeCase ++;
+      // Primary color
+        red = 200;
+        green = 10;
+        blue = 0;
+      // Secondary color
+        redTip = 200;
+        greenTip = 50;
+        blueTip = 0;
+      // Third color
+        redDef = 255;
+        greenDef = 200;
+        blueDef = 100;
+      // DELAYVAL Change
+        DELAYVAL = 30;  // Changes delayval to make a more dramatic blade opening/retracting
+
+      // Pulsing Intensity Change
+        pulseStep = 30;
+        pulseAmount = 5;
+
+      modeName = "Potensial New Feature";
       modeCase = 0;
     break;
 
