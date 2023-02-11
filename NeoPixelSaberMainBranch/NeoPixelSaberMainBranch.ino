@@ -144,7 +144,7 @@ void loop() {
     actionBtnState = digitalRead(actionButton);
 
   if (bladeOff) { // If blade off...
-    if (igniteBtnState == HIGH) { //  Starts the blade if the ignite button is pressed.
+    if (igniteBtnState == HIGH || shockState == LOW) { //  Starts the blade if the ignite button is pressed, or if the shocksensor is disturbed (enables stab ignition) :)
 
       // Start Blade
         startBlade(red, green, blue);
