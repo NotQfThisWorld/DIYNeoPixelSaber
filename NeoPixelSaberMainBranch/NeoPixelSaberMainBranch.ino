@@ -32,11 +32,6 @@ CRGB ledsB[NUM_LEDSB];
   bool tipChange = false; // Boolean to check if tip is different color or not
   bool pulseDown; // Boolean to check if the blade is pulsing down or not
 
-// RGB LED PINS
-  const int redPin = 11;  // Nano: 3
-  const int greenPin = 10;  // Nano: 5
-  const int bluePin = 9;  // Nano: 6
-
 // Power-Button-Indicator LED Pins (if you use them.)
   const int redIndi = 8; // Nano: 8
   const int greenIndi = 7; // Nano: 7
@@ -54,7 +49,7 @@ CRGB ledsB[NUM_LEDSB];
     int green;
     int blue;
 
-  // Secondary color values, for tipdrag
+  // Secondary color values, for MeltTip
     int redTip;
     int greenTip;
     int blueTip;
@@ -68,6 +63,12 @@ CRGB ledsB[NUM_LEDSB];
     int redFade;
     int greenFade;
     int blueFade;
+
+  // Fifth color values, for tip in meltTip()
+    int tipRed;
+    int tipGreen;
+    int tipBlue;
+    // Using a secondary set of variables for this, since for some or other weird reason, the FastLED.setRGB command would alter the *color*Tip variables.
 
 // Int for which color is chosen
   int modeCase;
@@ -89,6 +90,9 @@ CRGB ledsB[NUM_LEDSB];
 
 // String for which color is selected
   String modeName;
+
+// Tip size
+  const int tipSize = 4;
 
 // pulsinging Light Variables
   int pulsingLowest;
@@ -166,38 +170,23 @@ void loop() {
     }
 
     else if (shockState == LOW) { // Checks if the knock switch has been disturbed. Runs blasterDeflect function if true.
-
+     
+     // Blaster Deflect Effect
       blasterDeflect();
 
     }
 
     else if (actionBtnState == HIGH && tipChange) { // Checks if actionbutton is pressed, and tipchange is true. Turns on tip if both true
+     
+     // Melttip on
+      meltTip(true);
 
-      // *** Debugging ***
-        Serial.println("TipDrag");
-
-      // Writes tipdrag colors to tip
-        analogWrite(redPin, redTip);
-        analogWrite(greenPin, greenTip);
-        analogWrite(bluePin, blueTip);
-
-      // Tip is now On
-        tipChange = ! tipChange;
-      
     }
     else if (actionBtnState == LOW && !tipChange) { // Checks if actionbutton is not pressed, and if tipchange is false. Turns of tip if both are false
-
-      // *** Debugging ***
-        Serial.println("TipDragStopped");
-
-      // Writes tip colors back to normal
-        analogWrite(redPin, red);
-        analogWrite(greenPin, green);
-        analogWrite(bluePin, blue);
-
-      // Tip is now Off
-        tipChange = ! tipChange;      
-
+     
+     // Melttip off
+      meltTip(false);
+      
     }
     else {
       // Pulsing Light
@@ -208,7 +197,7 @@ void loop() {
 
 void startBlade(int red, int green, int blue) { // Startanimation for blade
 
-  // Turn off red indicator, to turn both leds on (see line 44)
+  // Turn off red indicator, to turn both leds on (see line 39)
     digitalWrite(redIndi, 0);
 
   for(int i=0; i<NUM_LEDSF; i++) { // Starts each pixel with the set color, with DELAYVAL between each
@@ -221,11 +210,6 @@ void startBlade(int red, int green, int blue) { // Startanimation for blade
     
     // pulsingAnimation(); // Play pulsingAnimation, for more vareity
   }
-  
-  // Turn on end-LED
-    analogWrite(redPin, red);
-    analogWrite(greenPin, green);
-    analogWrite(bluePin, blue);
   
   // Blade is now On
     bladeOff = ! bladeOff; 
@@ -241,14 +225,8 @@ void startBlade(int red, int green, int blue) { // Startanimation for blade
 
 void retractBlade() { // Retract animation for blade
 
-  // Turn off green indicator, to turn both Leds on (see line 44)
+  // Turn off green indicator, to turn both Leds on (see line 39)
     digitalWrite(greenIndi, 0);
-
-  // Turn off end-LED
-    analogWrite(redPin, 0);
-    analogWrite(greenPin, 0);
-    analogWrite(bluePin, 0);
-
   
   for(int i=NUM_LEDSF; i--;) {  // Turns off all leds, one by one
 
@@ -276,26 +254,27 @@ void retractBlade() { // Retract animation for blade
 
 void setMode() { // Sets Mode (colors, effect intensities etc.)
 
-  //modeCase = 8; // Uncomment to use test new feature mode. See line 458 for more info.
-
-  // Write on to green indicator to turn both off (see line 44);
+  // Write on to green indicator to turn both off (see line 39);
     digitalWrite(greenIndi, 1);
   
   // Defaults. Can and Will be changed in some switch cases.
-    DELAYVAL = 10;  // Sets DELAYVAL to 10 (default). Can be changed in switch statement.
-    pulseStep = 20; // Sets pulseStep to 20 (default)(this does not mean that it does not pulsing). Can be changed in switch statement.
-    pulseAmount = 2; // Sets pulseAmount to 2 (default). Can be changed in switch statement
-
+    // Delay and pulse defaults
+      DELAYVAL = 10;  // Sets DELAYVAL to 10 (default). Can be changed in switch statement.
+      pulseStep = 20; // Sets pulseStep to 20 (default)(this does not mean that it does not pulsing). Can be changed in switch statement.
+      pulseAmount = 2; // Sets pulseAmount to 2 (default). Can be changed in switch statement
+    // Color defaults
+      // Secondary color
+        redTip = 200;
+        greenTip = 30;
+        blueTip = 2;
+  
   switch (modeCase) {
     case 0: // BLUE
       // Primary color
         red = 0;
         green = 0;
         blue = 255;
-      // Secondary color
-        redTip = 200;
-        greenTip = 0;
-        blueTip = 200;
+
       // Third color
         redDef = 200;
         greenDef = 200;
@@ -313,10 +292,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         red = 255;
         green = 0;
         blue = 0;
-      // Secondary color
-        redTip = 255;
-        greenTip = 30;
-        blueTip = 2;
+
       // Third color
         redDef = 255;
         greenDef = 240;
@@ -337,10 +313,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         red = 0;
         green = 255;
         blue = 0;
-      // Secondary color
-        redTip = 255;
-        greenTip = 30;
-        blueTip = 0;
+
       // Third color
         redDef = 200;
         greenDef = 255;
@@ -358,10 +331,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         red = 255;
         green = 100;
         blue = 0;
-      // Secondary color
-        redTip = 0;
-        greenTip = 255;
-        blueTip = 255;
+
       // Third color
         redDef = 255;
         greenDef = 200;
@@ -376,10 +346,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         red = 200;
         green = 10;
         blue = 0;
-      // Secondary color
-        redTip = 200;
-        greenTip = 50;
-        blueTip = 0;
+
       // Third color
         redDef = 255;
         greenDef = 200;
@@ -400,10 +367,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         red = 0;
         green = 200;
         blue = 200;
-      // Secondary color
-        redTip = 255;
-        greenTip = 100;
-        blueTip = 0;
+
       // Third color
         redDef = 240;
         greenDef = 255;
@@ -418,10 +382,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         red = 255;
         green = 0;
         blue = 255;
-      // Secondary color
-        redTip = 255;
-        greenTip = 50;
-        blueTip = 0;
+
       // Third color
         redDef = 240;
         greenDef = 230;
@@ -436,10 +397,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         red = 100;
         green = 0;
         blue = 255;
-      // Secondary color
-        redTip = 255;
-        greenTip = 50;
-        blueTip = 0;
+
       // Third color
         redDef = 255;
         greenDef = 200;
@@ -455,7 +413,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
       modeCase = 0;
     break;
 
-    case 8: // Test new features! Uncomment line 279, and change line 455 from modeCase = 0; to modeCase ++;
+    case 8: // Test new features! Change line 413 from modeCase = 0; to modeCase ++; to use.
       // Primary color
         red = 200;
         green = 10;
@@ -475,7 +433,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         pulseStep = 30;
         pulseAmount = 5;
 
-      modeName = "Potensial New Feature";
+      modeName = "New Features";
       modeCase = 0;
     break;
 
@@ -525,6 +483,53 @@ void blasterDeflect() { // Blaster Deflect Effect
   }
 }
 
+void meltTip(bool tipState) { // Changes the tipleds to the tipmelt color if called with true, changes them back if called with false.
+
+  if (tipState) { // Changes the tip to Tipmelt color.
+  
+    // Defines the new tip colors to be used.
+      tipRed = redTip;
+      tipGreen = greenTip;
+      tipBlue = blueTip;
+
+    // *** Debugging ***
+      Serial.println("MeltTip");
+
+      for(int j=NUM_LEDSB; j>NUM_LEDSB - tipSize/2; j--) { // Turns on the first half of the tipmelt leds in the tipmelt color.
+        ledsF[j].setRGB( tipRed, tipGreen, tipBlue);
+        ledsB[j].setRGB( tipRed, tipGreen, tipBlue);
+      }
+      for(int j=NUM_LEDSB-tipSize/2; j>NUM_LEDSB - tipSize; j--) { // Turns on the second half of the tipmelt leds in a slightly brighter color.
+        ledsF[j].setRGB( tipRed - 30, tipGreen - 5, tipBlue + 20);
+        ledsB[j].setRGB( tipRed - 30, tipGreen - 5, tipBlue + 20);
+      }
+
+    // Tip is now On
+      tipChange = ! tipChange;
+  } 
+  else { // Changes the tip back to the original color
+      
+   // Defines the new tip colors to be used.
+    tipRed = red;
+    tipGreen = green;
+    tipBlue = blue;
+
+   // *** Debugging ***
+     Serial.println("MeltTipStopped");
+
+     for(int j=NUM_LEDSB; j>NUM_LEDSB - tipSize; j--) { 
+       ledsF[j].setRGB( tipRed, tipGreen, tipBlue);
+       ledsB[j].setRGB( tipRed, tipGreen, tipBlue);
+     }
+
+    // Tip is now Off
+      tipChange = ! tipChange;  
+  }
+  
+ FastLED.show(); // Send the updated pixels to the blade.
+ 
+}
+
 void pulsingAnimation() { // Pulsing animation for variation
 
   pulsingLowest = BRIGHTNESS - pulseStep; // pulsingLowest is BRIGHTNESS - pulseStep. PulseStep is set in setMode program.
@@ -551,7 +556,7 @@ void pulsingAnimation() { // Pulsing animation for variation
     FastLED.show();
   
   // *** Debugging ***
-    Serial.println(pulsingBrightness);
+    //Serial.println(pulsingBrightness);
   
 }
 
