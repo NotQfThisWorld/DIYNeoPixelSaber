@@ -9,7 +9,7 @@
   const int NUM_LEDSB = 24; // Back strip LED_COUNT
 
 // Brigthness
-  const int BRIGHTNESS = 100;  // Change to higher value when done testing. MUST NOT BE TO HIGH! (Draws more current)
+  const int BRIGHTNESS = 100;
 
 CRGB ledsF[NUM_LEDSF];
 CRGB ledsB[NUM_LEDSB];
@@ -92,7 +92,7 @@ CRGB ledsB[NUM_LEDSB];
   String modeName;
 
 // Tip size
-  const int tipSize = 4;
+  const int tipSize = 6; // Should be an even number.
 
 // pulsinging Light Variables
   int pulsingLowest;
@@ -170,23 +170,23 @@ void loop() {
     }
 
     else if (shockState == LOW) { // Checks if the knock switch has been disturbed. Runs blasterDeflect function if true.
-     
-     // Blaster Deflect Effect
+
+    // Blaster Deflect Effect
       blasterDeflect();
 
     }
 
     else if (actionBtnState == HIGH && tipChange) { // Checks if actionbutton is pressed, and tipchange is true. Turns on tip if both true
-     
+    
      // Melttip on
       meltTip(true);
-
+      
     }
     else if (actionBtnState == LOW && !tipChange) { // Checks if actionbutton is not pressed, and if tipchange is false. Turns of tip if both are false
-     
+    
      // Melttip off
       meltTip(false);
-      
+
     }
     else {
       // Pulsing Light
@@ -410,30 +410,27 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         pulseAmount = 1;
       
       modeName = "PURPLE";
-      modeCase = 0;
+      modeCase ++;
     break;
 
-    case 8: // Test new features! Change line 413 from modeCase = 0; to modeCase ++; to use.
+    case 8: // WHITE
       // Primary color
-        red = 200;
-        green = 10;
-        blue = 0;
-      // Secondary color
-        redTip = 200;
-        greenTip = 50;
-        blueTip = 0;
+        red = 140;
+        green = 90;
+        blue = 90;
+
       // Third color
-        redDef = 255;
-        greenDef = 200;
-        blueDef = 100;
+        redDef = 100;
+        greenDef = 0;
+        blueDef = 255;
       // DELAYVAL Change
         DELAYVAL = 30;  // Changes delayval to make a more dramatic blade opening/retracting
 
       // Pulsing Intensity Change
-        pulseStep = 30;
-        pulseAmount = 5;
+        pulseStep = 0;
+        pulseAmount = 0;
 
-      modeName = "New Features";
+      modeName = "WHITE";
       modeCase = 0;
     break;
 
@@ -485,8 +482,8 @@ void blasterDeflect() { // Blaster Deflect Effect
 
 void meltTip(bool tipState) { // Changes the tipleds to the tipmelt color if called with true, changes them back if called with false.
 
-  if (tipState) { // Changes the tip to Tipmelt color.
-  
+  if (tipState) {// Changes the tip to Tipmelt color.
+
     // Defines the new tip colors to be used.
       tipRed = redTip;
       tipGreen = greenTip;
@@ -506,28 +503,27 @@ void meltTip(bool tipState) { // Changes the tipleds to the tipmelt color if cal
 
     // Tip is now On
       tipChange = ! tipChange;
-  } 
+      } 
   else { // Changes the tip back to the original color
-      
-   // Defines the new tip colors to be used.
-    tipRed = red;
-    tipGreen = green;
-    tipBlue = blue;
+    
+    // Defines the new tip colors to be used.
+      tipRed = red;
+      tipGreen = green;
+      tipBlue = blue;
 
-   // *** Debugging ***
-     Serial.println("MeltTipStopped");
+    // *** Debugging ***
+      Serial.println("MeltTipStopped");
 
-     for(int j=NUM_LEDSB; j>NUM_LEDSB - tipSize; j--) { 
-       ledsF[j].setRGB( tipRed, tipGreen, tipBlue);
-       ledsB[j].setRGB( tipRed, tipGreen, tipBlue);
-     }
+      for(int j=NUM_LEDSB; j>NUM_LEDSB - tipSize; j--) {
+        ledsF[j].setRGB( tipRed, tipGreen, tipBlue);
+        ledsB[j].setRGB( tipRed, tipGreen, tipBlue);
+      }
 
     // Tip is now Off
-      tipChange = ! tipChange;  
+      tipChange = ! tipChange;      
+    
+     FastLED.show(); // Send the updated pixels to the blade.
   }
-  
- FastLED.show(); // Send the updated pixels to the blade.
- 
 }
 
 void pulsingAnimation() { // Pulsing animation for variation
