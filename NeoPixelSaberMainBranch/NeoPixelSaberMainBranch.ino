@@ -31,7 +31,7 @@ CRGB ledsB[NUM_LEDSB];
   bool bladeOff = true; // Boolean to check if blade is on or not
   bool tipChange = false; // Boolean to check if tip is different color or not
   bool pulseDown = true; // Boolean to check if the blade is pulsing down or not
-  bool LightningOn = false; // Boolean to check if the the lightning effect is playing or not.
+  bool lightningOn = false; // Boolean to check if the the lightning effect is playing or not.
 
 // Power-Button-Indicator LED Pins (if you use them.)
   const int redIndi = 8; // Nano: 8
@@ -65,16 +65,18 @@ CRGB ledsB[NUM_LEDSB];
     int greenFade;
     int blueFade;
 
-  // Fifth color values, for tip in meltTip()
-    int tipRed;
-    int tipGreen;
-    int tipBlue;
-    // Using a secondary set of variables for this, since for some or other weird reason, the FastLED.setRGB command would alter the *color*Tip variables.
-
-  // Sixth color values, for Lightning Effect
+  // Fifth color values, for Lightning Effect
     int redLightning = 50;
     int greenLightning = 50;
     int blueLightning = 255;
+    
+  // Sixth color values
+    int redTemp;
+    int greenTemp;
+    int blueTemp;
+    // Using a secondary set of variables for some effects, since for some or other weird reason, the FastLED.setRGB command sometimes alter the color variables.
+
+  
 
 // Int for which color is chosen
   int modeCase;
@@ -105,6 +107,7 @@ CRGB ledsB[NUM_LEDSB];
   const int fromEgdePos = 5;
   const int minStartPos = fromEgdePos;
   const int maxStartPos = NUM_LEDSF - blastSize - fromEgdePos;
+  int maxStartPos2 = NUM_LEDSF - maxLightningSize - fromEgdePos;
 
 // String for which color is selected
   String modeName;
@@ -194,7 +197,7 @@ void loop() {
 
     }
 
-    else if (actionBtnState == HIGH && tipChange && !(shockState == LOW)) { // Checks if actionbutton is pressed, and tipchange is true. Turns on tip if both true
+    else if (actionBtnState == HIGH && tipChange && !(shockState == LOW) && !lightningOn) { // Checks if actionbutton is pressed, and tipchange is true. Turns on tip if both true
     
       // Melttip on
         meltTip(true);
@@ -206,16 +209,13 @@ void loop() {
         meltTip(false);
 
     }
-    else if (actionBtnState == HIGH && shockState == LOW && !LightningOn) {
-
-      // Turn off the MeltTip effect, since it will be running since we press the actionBtnState
-        meltTip(false);
+    else if (actionBtnState == HIGH && igniteBtnState == HIGH && !lightningOn) {
 
       // Run the lightningEffect
         lightningEffect(true);
 
     }
-    else if (actionBtnState == LOW && LightningOn) {
+    else if (actionBtnState == LOW && lightningOn) {
 
       // Stop the lightningEffect
         lightningEffect(false);
@@ -519,20 +519,20 @@ void meltTip(bool on) { // Changes the tipleds to the tipmelt color if called wi
   if (on) {// Changes the tip to Tipmelt color.
 
     // Defines the new tip colors to be used.
-      tipRed = redTip;
-      tipGreen = greenTip;
-      tipBlue = blueTip;
+      redTemp = redTip;
+      greenTemp = greenTip;
+      blueTemp = blueTip;
 
     // *** Debugging ***
       Serial.println("MeltTip");
 
       for(int j=NUM_LEDSB; j>NUM_LEDSB - tipSize/2; j--) { // Turns on the first half of the tipmelt leds in the tipmelt color.
-        ledsF[j].setRGB( tipRed, tipGreen, tipBlue);
-        ledsB[j].setRGB( tipRed, tipGreen, tipBlue);
+        ledsF[j].setRGB( redTemp, greenTemp, blueTemp);
+        ledsB[j].setRGB( redTemp, greenTemp, blueTemp);
       }
       for(int j=NUM_LEDSB-tipSize/2; j>NUM_LEDSB - tipSize; j--) { // Turns on the second half of the tipmelt leds in a slightly brighter color.
-        ledsF[j].setRGB( tipRed - 30, tipGreen - 5, tipBlue + 20);
-        ledsB[j].setRGB( tipRed - 30, tipGreen - 5, tipBlue + 20);
+        ledsF[j].setRGB( redTemp - 30, greenTemp - 5, blueTemp + 20);
+        ledsB[j].setRGB( redTemp - 30, greenTemp - 5, blueTemp + 20);
       }
 
     // Tip is now On
@@ -541,16 +541,16 @@ void meltTip(bool on) { // Changes the tipleds to the tipmelt color if called wi
   else { // Changes the tip back to the original color
     
     // Defines the new tip colors to be used.
-      tipRed = red;
-      tipGreen = green;
-      tipBlue = blue;
+      redTemp = red;
+      greenTemp = green;
+      blueTemp = blue;
 
     // *** Debugging ***
       Serial.println("MeltTipStopped");
 
       for(int j=NUM_LEDSB; j>NUM_LEDSB - tipSize; j--) {
-        ledsF[j].setRGB( tipRed, tipGreen, tipBlue);
-        ledsB[j].setRGB( tipRed, tipGreen, tipBlue);
+        ledsF[j].setRGB( redTemp, greenTemp, blueTemp);
+        ledsB[j].setRGB( redTemp, greenTemp, blueTemp);
       }
 
     // Tip is now Off
@@ -561,6 +561,13 @@ void meltTip(bool on) { // Changes the tipleds to the tipmelt color if called wi
 }
 void lightningEffect(bool on) {
 
+    redTemp = red;
+    greenTemp = green;
+    blueTemp = blue;
+
+  // Turn off the MeltTip effect, since it will be running since we press the actionBtnState
+    meltTip(false);
+        
   if (on) {
     
     pulsingLowestTemp = pulsingLowest;
@@ -570,7 +577,7 @@ void lightningEffect(bool on) {
       lightningCount = random(minLightningCount - maxLightningCount);
 
     for (int i=0; i<lightningCount; i++ ) {
-      randomEffectStartPos = random(minStartPos, maxStartPos); // Where the effect starts
+      randomEffectStartPos = random(minStartPos, maxStartPos2); // Where the effect starts
       lightningSize = random(minLightningSize-maxLightningSize); // How big the effect is
 
       for(int i=randomEffectStartPos; i<randomEffectStartPos + lightningSize; i++ ) { // Write one lightning spot
@@ -586,17 +593,17 @@ void lightningEffect(bool on) {
       pulsingLowest = 5;
 
     // Lightning Effect is now ON
-      LightningOn = true;
+      lightningOn = true;
     
     // *** Debugging ***
       Serial.println("UNLIMITED!!! POWAAAA!!!");
-
+      
   }
   else {
 
     for(int i=0; i<NUM_LEDSF; i++) { // Resets the blade to original color
-      ledsF[i].setRGB( red, green, blue);
-      ledsB[i].setRGB( red, green, blue);
+      ledsF[i].setRGB( redTemp, greenTemp, blueTemp);
+      ledsB[i].setRGB( redTemp, greenTemp, blueTemp);
     }
     FastLED.show();
 
@@ -605,11 +612,18 @@ void lightningEffect(bool on) {
       pulsingLowest = pulsingLowestTemp;
 
     // Lightning Effect is now OFF
-      LightningOn = false;
+      lightningOn = false;
 
     // *** Debugging ***
       Serial.println("***falls down reactorshaft***");
   }
+  // *** Debugging ***
+    Serial.println(redTemp);
+    Serial.println(greenTemp);
+    Serial.println(blueTemp);
+    Serial.println(BRIGHTNESS);
+
+
 }
 void pulsingAnimation() { // Pulsing animation for variation
 
