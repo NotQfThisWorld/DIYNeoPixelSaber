@@ -5,11 +5,11 @@
   const int DATA_PINB = 13;      // Back strip PIN  // Nano: 11
 
 // Number of Leds
-  const int NUM_LEDSF = 24; // Front strip LED_COUNT  // Change to (final led count) on the finished version, 24 on "test NeoPixel".
-  const int NUM_LEDSB = 24; // Back strip LED_COUNT
+  const int NUM_LEDSF = 144; // Front strip LED_COUNT  // Change to (final led count) on the finished version
+  const int NUM_LEDSB = 144; // Back strip LED_COUNT   // Change to (final led count) on the finished version
 
 // Brigthness
-  const int BRIGHTNESS = 100;
+  const int BRIGHTNESS = 50;
 
 CRGB ledsF[NUM_LEDSF];
 CRGB ledsB[NUM_LEDSB];
@@ -78,12 +78,11 @@ CRGB ledsB[NUM_LEDSB];
 
 // Sizes
   // How big the blasterdeflect area should be
-    const int blastSize = 5;
+    const int blastSize = 10;
   // Tip size
-    const int tipSize = 6; // Should be an even number.
+    const int tipSize = 8; // Should be an even number.
 
 // How fast the fade effect should be
-  int fadeStep;
   int defFadeStep = 20; // For blaster fade effect
 
 // Starting positions for blaster deflect
@@ -189,10 +188,10 @@ void loop() {
         meltTip(false);
 
     }
-    else {
-      // Pulsing Light
-        pulsingAnimation();
-    }        
+    
+    // Pulsing Light
+      pulsingAnimation();
+           
   }  
 }
 
@@ -201,15 +200,23 @@ void startBlade(int red, int green, int blue) { // Startanimation for blade
   // Turn off red indicator, to turn both leds on (see line 39)
     digitalWrite(redIndi, 0);
 
+  // Turns on the first led first
+    ledsF[0].setRGB( red, green, blue);
+    ledsB[0].setRGB( red, green, blue);
+
   for(int i=0; i<NUM_LEDSF; i++) { // Starts each pixel with the set color, with DELAYVAL between each
+
+    i++;
 
     ledsF[i].setRGB( red, green, blue);
     ledsB[i].setRGB( red, green, blue);
+    ledsF[i + 1].setRGB( red, green, blue);
+    ledsB[i + 1].setRGB( red, green, blue);
     FastLED.show();
 
     delay(DELAYVAL); // Pause before next pass through loop
     
-    // pulsingAnimation(); // Play pulsingAnimation, for more vareity
+    pulsingAnimation(); // Play pulsingAnimation, for more vareity
   }
   
   // Blade is now On
@@ -228,16 +235,24 @@ void retractBlade() { // Retract animation for blade
 
   // Turn off green indicator, to turn both Leds on (see line 39)
     digitalWrite(greenIndi, 0);
-  
+
+  // Turns off the last led first
+    ledsF[NUM_LEDSF - 1] = CRGB::Black; 
+    ledsB[NUM_LEDSB - 1] = CRGB::Black; 
+      
   for(int i=NUM_LEDSF; i--;) {  // Turns off all leds, one by one
 
-      ledsF[i] = CRGB::Black; 
-      ledsB[i] = CRGB::Black; 
-      FastLED.show();
+    i--;
+    
+    ledsF[i] = CRGB::Black; 
+    ledsB[i] = CRGB::Black;
+    ledsF[i - 1] = CRGB::Black; 
+    ledsB[i - 1] = CRGB::Black; 
+    FastLED.show();
 
     delay(DELAYVAL);
     
-    // pulsingAnimation(); // Play pulsinganimation, for more vareity
+    pulsingAnimation(); // Play pulsinganimation, for more vareity
   }
 
   // Blade is now Off
@@ -260,15 +275,15 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
   
   // Defaults. Can and Will be changed in some switch cases.
     // Delay and pulse defaults
-      DELAYVAL = 10;  // Sets DELAYVAL to 10 (default). Can be changed in switch statement.
-      pulsingStep = 20; // Sets pulsingStep to 20 (default). Can be changed in switch statement.
+      DELAYVAL = 0;  // Sets DELAYVAL to 10 (default). Can be changed in switch statement.
+      pulsingStep = 10; // Sets pulsingStep to 10 (default). Can be changed in switch statement.
       pulseAmount = 2; // Sets pulseAmount to 2 (default). Can be changed in switch statement
     // Color defaults
       // Secondary color
         redTip = 200;
         greenTip = 30;
         blueTip = 2;
-  
+
   switch (modeCase) {
     case 0: // BLUE
       // Primary color
@@ -299,11 +314,11 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         greenDef = 240;
         blueDef = 240;
       // DELAYVAL Change
-        DELAYVAL = 20;  // Changes delayval to make a more dramatic blade opening/retracting
+        DELAYVAL = 10;  // Changes delayval to make a more dramatic blade opening/retracting
 
       // pulsing Intensity Change
         pulsingStep = 25;
-        pulseAmount = 8;
+        pulseAmount = 10;
 
       modeName = "RED";
       modeCase++;
@@ -330,7 +345,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
     case 3: // GOLD
       // Primary color
         red = 255;
-        green = 100;
+        green = 80;
         blue = 0;
 
       // Third color
@@ -353,11 +368,11 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         greenDef = 200;
         blueDef = 100;
       // DELAYVAL Change
-        DELAYVAL = 30;  // Changes delayval to make a more dramatic blade opening/retracting
+        DELAYVAL = 10;  // Changes delayval to make a more dramatic blade opening/retracting
 
       // Pulsing Intensity Change
-        pulsingStep = 30;
-        pulseAmount = 5;      
+        pulsingStep = 20;
+        pulseAmount = 10;      
 
         modeName = "ORANGE";
         modeCase ++;
@@ -373,6 +388,10 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         redDef = 240;
         greenDef = 255;
         blueDef = 255;
+      
+      // Pulsing Intensity Change
+        pulsingStep = 15;
+        pulseAmount = 3; 
 
       modeName = "AQUA";
       modeCase++;
@@ -382,12 +401,16 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
       // Primary color
         red = 255;
         green = 0;
-        blue = 255;
+        blue = 100;
 
       // Third color
         redDef = 240;
         greenDef = 230;
         blueDef = 255;
+
+      // Pulsing Intensity Change
+        pulsingStep = 15;
+        pulseAmount = 3; 
 
       modeName = "Magenta";
       modeCase++;
@@ -395,7 +418,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
 
     case 7: // PURPLE
       // Primary color
-        red = 100;
+        red = 200;
         green = 0;
         blue = 255;
 
@@ -404,11 +427,11 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         greenDef = 200;
         blueDef = 255;
       // DELAYVAL Change
-        DELAYVAL = 20;  // Changes delayval to make a more dramatic blade opening/retracting
+        DELAYVAL = 3;  // Changes delayval to make a more dramatic blade opening/retracting
 
       // Pulsing Intensity Change
         pulsingStep = 15;
-        pulseAmount = 1;
+        pulseAmount = 3;
       
       modeName = "PURPLE";
       modeCase ++;
@@ -416,7 +439,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
 
     case 8: // WHITE
       // Primary color
-        red = 150;
+        red = 190;
         green = 80;
         blue = 80;
 
@@ -425,7 +448,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         greenDef = 0;
         blueDef = 255;
       // DELAYVAL Change
-        DELAYVAL = 30;  // Changes delayval to make a more dramatic blade opening/retracting
+        DELAYVAL = 10;  // Changes delayval to make a more dramatic blade opening/retracting
 
       // Pulsing Intensity Change
         pulsingStep = 0;
@@ -463,9 +486,9 @@ void blasterDeflect() { // Blaster Deflect Effect
   for(int j=randomEffectStartPos; j<randomEffectStartPos + blastSize; j++ ) {
     ledsF[j].setRGB( redDef, greenDef, blueDef);
     ledsB[j].setRGB( redDef, greenDef, blueDef);
-    FastLED.show();
   }
-  delay(100);
+  FastLED.show();
+  delay(50);
   while (!(redFade == red) || !(greenFade == green) || !(blueFade == blue)){ // While "color"Fade isn't the same as the original color:
 
     fadeValues(defFadeStep); // Get the fade values
@@ -474,10 +497,12 @@ void blasterDeflect() { // Blaster Deflect Effect
     for(int j=randomEffectStartPos; j<randomEffectStartPos + blastSize; j++ ) {
       ledsF[j].setRGB( redFade, greenFade, blueFade);
       ledsB[j].setRGB( redFade, greenFade, blueFade);
-      FastLED.show();
+      
 
-      pulsingAnimation(); // Play pulsinganimation, for more vareity
+      
     }
+    pulsingAnimation(); // Play pulsinganimation, for more vareity
+    FastLED.show();
   }
 }
 
@@ -498,8 +523,8 @@ void meltTip(bool on) { // Changes the tipleds to the tipmelt color if called wi
         ledsB[j].setRGB( tipRed, tipGreen, tipBlue);
       }
       for(int j=NUM_LEDSB-tipSize/2; j>NUM_LEDSB - tipSize; j--) { // Turns on the second half of the tipmelt leds in a slightly brighter color.
-        ledsF[j].setRGB( tipRed - 30, tipGreen - 5, tipBlue + 20);
-        ledsB[j].setRGB( tipRed - 30, tipGreen - 5, tipBlue + 20);
+        ledsF[j].setRGB( tipRed - 20, tipGreen - 4, tipBlue + 10);
+        ledsB[j].setRGB( tipRed - 20, tipGreen - 4, tipBlue + 10);
       }
 
     // Tip is now On
@@ -553,7 +578,7 @@ void pulsingAnimation() { // Pulsing animation for variation
     FastLED.show();
   
   // *** Debugging ***
-    //Serial.println(pulsingBrightness);
+    Serial.println(pulsingBrightness);
   
 }
 
