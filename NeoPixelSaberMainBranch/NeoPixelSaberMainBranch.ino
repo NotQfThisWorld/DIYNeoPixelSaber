@@ -5,7 +5,7 @@
   const int DATA_PINB = 11;      // Back strip PIN  // Nano: 11
 
 // Number of Leds
-  const int NUM_LEDSF = 118; // Front strip LED_COUNT  // Change to (final led count) on the finished version
+  const int NUM_LEDSF = 117; // Front strip LED_COUNT  // Change to (final led count) on the finished version
   const int NUM_LEDSB = 117; // Back strip LED_COUNT   // Change to (final led count) on the finished version
 
 // Brigthness
@@ -78,7 +78,7 @@ CRGB ledsB[NUM_LEDSB];
   // How big the blasterdeflect area should be
     const int blastSize = 25;
   // Tip size
-    const int tipSize = 8; // Should be an even number.
+    const int tipSize = 10; // Should be an even number.
 
 // How fast the fade effect should be
   int defFadeStep = 20; // For blaster fade effect
@@ -240,8 +240,6 @@ void startBlade(int red, int green, int blue) { // Startanimation for blade
     pulsingAnimation();
     pulsingAnimation(); // Tree times, to make the pulsing as close to the running pulsing as possible
   } 
-    ledsF[NUM_LEDSF-8].setRGB( red, green, blue);
-    ledsB[NUM_LEDSF-8].setRGB( red, green, blue);
     ledsF[NUM_LEDSF-7].setRGB( red, green, blue);
     ledsB[NUM_LEDSF-7].setRGB( red, green, blue);
     ledsF[NUM_LEDSF-6].setRGB( red, green, blue);
@@ -318,8 +316,6 @@ void retractBlade() { // Retract animation for blade
     pulsingAnimation();
     pulsingAnimation(); // Tree times, to make the pulsing as close to the running pulsing as possible
   }
-    ledsF[9] = CRGB::Black; 
-    ledsB[9] = CRGB::Black;
     ledsF[8] = CRGB::Black; 
     ledsB[8] = CRGB::Black;
     ledsF[7] = CRGB::Black; 
@@ -393,9 +389,9 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
         green = 0;
         blue = 0;
       // Secondary color
-        redTip = 140;
-        greenTip = 140;
-        blueTip = 200;
+        redTip = 255;
+        greenTip = 50;
+        blueTip = 0;
       // Third color
         redDef = 255;
         greenDef = 240;
@@ -417,9 +413,9 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
         green = 255;
         blue = 0;
       // Secondary color
-        redTip = 40;
-        greenTip = 40;
-        blueTip = 255;
+        redTip = 0;
+        greenTip = 170;
+        blueTip = 200;
       // Third color
         redDef = 200;
         greenDef = 255;
@@ -439,9 +435,9 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
         green = 90;
         blue = 0;
       // Secondary color
-        redTip = 100;
-        greenTip = 100;
-        blueTip = 200;
+        redTip = 200;
+        greenTip = 40;
+        blueTip = 0;
       // Third color
         redDef = 255;
         greenDef = 200;
@@ -458,8 +454,8 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
         blue = 0;
       // Secondary color
         redTip = 200;
-        greenTip = 100;
-        blueTip = 100;
+        greenTip = 50;
+        blueTip = 0;
       // Third color
         redDef = 255;
         greenDef = 200;
@@ -481,7 +477,7 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
         green = 200;
         blue = 200;
       // Secondary color
-        redTip = 255;
+        redTip = 200;
         greenTip = 20;
         blueTip = 100;
       // Third color
@@ -502,7 +498,7 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
         green = 0;
         blue = 100;
       // Secondary color
-        redTip = 0;
+        redTip = 255;
         greenTip = 0;
         blueTip = 255;
       // Third color
@@ -524,8 +520,8 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
         green = 0;
         blue = 255;
       // Secondary color
-        redTip = 150;
-        greenTip = 100;
+        redTip = 255;
+        greenTip = 0;
         blueTip = 100;
       // Third color
         redDef = 255;
@@ -548,9 +544,9 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
         green = 80;
         blue = 80;
       // Secondary color
-        redTip = 255;
-        greenTip = 20;
-        blueTip = 20;
+        redTip = 240;
+        greenTip = 0;
+        blueTip = 255;
       // Third color
         redDef = 240;
         greenDef = 0;
@@ -573,8 +569,8 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
 
   }
 
-  if (delay){
-    delay(300);
+  if (withDelay){ // If there should be a delay when changing mode
+    delay(50);
   }
 
   // Turn on led indicator after color is chosen
@@ -583,6 +579,10 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
   // *** Debugging ***
     Serial.print("Selected Mode: ");
     Serial.println(modeName);
+
+  if (withDelay){ // If there should be a delay after changing mode
+    delay(300);
+  }
 }
 
 void blasterDeflect() { // Blaster Deflect Effect
@@ -638,7 +638,6 @@ void meltTip(bool on) { // Changes the tipleds to the tipmelt color if called wi
     // *** Debugging ***
       Serial.println("MeltTip");
 
-      ledsF[NUM_LEDSF].setRGB( tipRed, tipGreen, tipBlue);
       for(int j=NUM_LEDSB-1; j>NUM_LEDSB - tipSize; j--) { // Turns on the first half of the tipmelt leds in the tipmelt color.
         ledsF[j].setRGB( tipRed, tipGreen, tipBlue);
         ledsB[j].setRGB( tipRed, tipGreen, tipBlue);
@@ -657,7 +656,6 @@ void meltTip(bool on) { // Changes the tipleds to the tipmelt color if called wi
     // *** Debugging ***
       Serial.println("MeltTipStopped");
 
-      ledsF[NUM_LEDSF].setRGB( tipRed, tipGreen, tipBlue);
       for(int j=NUM_LEDSB; j>NUM_LEDSB - tipSize; j--) {
         ledsF[j].setRGB( tipRed, tipGreen, tipBlue);
         ledsB[j].setRGB( tipRed, tipGreen, tipBlue);
