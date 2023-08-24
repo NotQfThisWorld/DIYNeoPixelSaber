@@ -4,33 +4,48 @@
 
 
 This is the github for a project I made. It is called the NeoPixelSaber.
-My goal was to make a lightsaber using an arduino nano, and relativly cheap parts.
+My goal was to make a lightsaber using an arduino nano, and relativly cheap parts/junk.
 
-## Part List:
-- 1x Arduino Nano
-- 2x Momentary Push Button
-- 2x Indicator leds (optional, can also be integrated into one of the buttons).
-- 1x On/Off switch
-- 2x 1m 144LED NeoPixelStip
-- Some sort of diffuser. I used bubblewrap, but there are better alternatives.
-- 1x Capacitor 1000 µF
-- Resistors for both your Strip and you buttons. May vary from product to product.
-- 1x Plug with atleast 4 pins.
-- 1x 2x2 AA battery holder
-- 4x 1,2V rechargable AA-batteries
-- 1m PP-tube 32mm
-- 1m PP-tube 40mm
-- 1x Sleeve
-- TP cable
-- Various things for decorating. (Be creative)
 
-## Tools:
-- Soldering Iron
-- Knife
-- Saw (circle saw or similar for better cuts)
-- Sandpaper
-- Paint and/or spray-paint
-- Drill
+
+## What I used:
+
+### Materials:
+_- 1x Arduino Nano_
+_- 1x momentary push-button_
+_- 1x powerbutton from a Dolce Gusto capsule coffe maker_
+_- 1x On/Off switch_
+_- 2x 1m 144LED WS2812B Addressable LED-strip_
+_- 1x Capacitor 1000 µF from a printer-powersupply_
+_- 1x Capacitor 2200 µF from a printer-powersupply_
+_- 2x 330Ω resistor_
+_- 2x 10 000Ω resistor_
+_- A 4pin plug from a printer-powersupply_
+_- 1x 2x2 AA battery holder_
+_- TP cable_
+_- Bubblewrap_
+_- 3x Schotch Tape Rolls_
+_- 1x Milk Screw Cap_
+_- Small 12x2cm acrylic plate I had lying around._
+_- 4x 1,2V rechargable AA-batteries_
+_- 1m PP-tube 32mm_
+_- 1m PP-tube 40mm_
+_- 1x Sleeve for 32mm tubes_
+_- Some random bike parts found in a trench_
+_- Screews normally used in pc-cabinets_
+_- Hobby popsicle-sticks_
+_- Electrical Tape_
+
+### Tools:
+_- Soldering Iron_
+_- Knife_
+_- Circle Saw_
+_- Sandpaper_
+_- Paint and spray-paint_
+_- Drill_
+_- Hotglue-gun_
+
+
 
 ## Suggested Procedure
 
@@ -63,16 +78,14 @@ No need to write the full code now, you can adjust it as you go.
 19. Your lightsaber is pretty much done. Congrats, young padawan. You have successfully constructed you very own lightsaber.
 20. Show it to all of your friends :D.
 
+
+
 ## Gallery
 ![20230822_180835](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/0053589a-f2af-4c14-bfaf-bd9e64663454)
 ![20230822_181004](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/2e862715-6fb2-49dc-9b35-af4becda76f9)
 ![20230822_181655](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/795b4370-064a-4b11-ab96-1d6bce60db9d)
 ![20230822_181719](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/4fa35747-e82b-4fe7-90df-0d47fe08c369)
 ![20230824_160533](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/0057b305-163c-4c66-8f70-cc37f5f22ef4)
-
-
-
-
 
 
 ## Questions?
