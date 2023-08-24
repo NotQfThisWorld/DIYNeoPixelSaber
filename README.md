@@ -32,7 +32,7 @@ My goal was to make a lightsaber using an arduino nano, and relativly cheap part
 
 This is only a brief explination of how I would want to go forward. Be carefull, so that you don't damage any materials or equiment. I take no responsibility for any damaged materials or equipment. Make sure you know what you are doing.
 
-   --Hilt--
+###   --Hilt--
 1. First, you will want to prototype your project. I used a 24 pixel neopixel ring, some buttons and some LEDS. I recomend using an arduino UNO for prototyping, for easy connectivity, however that is only a personal preference.
 2. Then, you will want to write the code for it. Although you can go ahead and use my code, I strongly suggest that you try to write the code yourself. That way, you get a better understanding of how your lightsaber works, as well as the knowlegde of how the code works. It will also then be easier to add features to the code if you know how it functions. (+ that my code is terrible).
 No need to write the full code now, you can adjust it as you go.
@@ -44,13 +44,13 @@ No need to write the full code now, you can adjust it as you go.
 8. Start soldering. Make sure you have enough length on each wire (better safe than sorry) and that the wires are drawn trough any holes or channels that you want them to go through.
 9. Remember to add a main powerswitch. I put mine inside of the bottom cap, but If you can find a better place for it, go ahead.
 
-   --Blade--
+###   --Blade--
 10. Cut the strips to length. Glue the two strips together, back to back. Solder the connections to the plug. Add a 1000 µF capasitor between the + and -.
 11. Find a way to make the electronics part of the strip fit snuggly into the bottom of the blade. I used a small sleeve with electrical tape around. Make also sure that the "dark" electronics part of the blade is hidden when you put it into the hilt. Hotglue the end so that only the plug is accessible
 12. Find something to put on the end of the blade. I used a pice of white PE-foam (you often find them protecting electronics like screens). However, this gave me a bit of a flat tip. Try to find something cone-shaped. Also, by sanding down the blade, you can allow more light through, which makes for a brighter blade. But, however, this may lead to a less smooth blade.
 13. Your blade is now more or less done.
 
-   --Hilt--
+###   --Hilt--
 14. Place the buttons on the electronics compartment. Make sure that they are as close to flush with the inside of the hilt as possible.
 15. Find out where the buttons lines up. Drill holes for the buttons.
 16. Now make sure that everything fits together. The electronics inside the hilt, the blade inside the top of the hilt/the sleeve.
