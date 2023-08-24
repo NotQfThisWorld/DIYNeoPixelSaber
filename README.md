@@ -4,7 +4,7 @@
 
 
 This is the github for a project I made. It is called the NeoPixelSaber.
-My goal was to make a lightsaber using an arduino nano, and relativly cheap parts/junk.
+My goal was to make a lightsaber using an arduino nano, and relativly cheap or even salvaged parts.
 
 
 
