@@ -1,6 +1,6 @@
 # DIYNeoPixelSaber
 
-![20230822_165131](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/26a6d34b-572b-4f51-a0a5-79b457a6e0d0)
+![20230824_154503](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/eb88688a-9a80-4d6f-bde4-b064434a8532)
 
 
 This is the github for a project I made. It is called the NeoPixelSaber.
@@ -68,9 +68,10 @@ No need to write the full code now, you can adjust it as you go.
 ![20230822_181004](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/2e862715-6fb2-49dc-9b35-af4becda76f9)
 ![20230822_181655](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/795b4370-064a-4b11-ab96-1d6bce60db9d)
 ![20230822_181719](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/4fa35747-e82b-4fe7-90df-0d47fe08c369)
-![20230822_165058](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/4573e1b5-30b2-4f35-a8f2-a9bd576d8e12)
-![20230822_165141](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/74d9ca34-8d56-40aa-aad6-75b36f4e1e7c)
-![20230822_165105](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/ddffd2a0-1726-49d1-a1fa-6c35cc801f34)
+![20230824_154704](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/506fb47e-8559-483d-8a46-09d711516d03)![20230824_154734](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/830dfc34-6bcf-4f89-88bd-564a9c5da65f)![20230824_154954](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/2178a2a0-7e6a-4a77-ba93-ab379ae5a429)
+
+
+
 
 
 ## Questions?
