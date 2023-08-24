@@ -57,3 +57,7 @@ No need to write the full code now, you can adjust it as you go.
 17. Upload the code. Make sure to update any pins or led-strip lengths before uploading, in case you have prototyped with another board and/or led-strip. Adjust the code as you see fit. Colors is very likely to need adjusting, as the white tube dissorts some of the colors quite a bit.
 18. Now comes the fun part: Decorating. There is really no right or wrong here. Just make sure that nothing of your decor comes in the way for the electronics or the button-holes. I would start with the paint, before adding other decor later.
 19. Your lightsaber is pretty much done. Congrats, young padawan. You have successfully constructed you very own lightsaber.
+20. Show it to all of your friends :D.
+
+## Questions?
+If you have any questions, need help with anything, or have suggestions for anything, shoot me a message on discord @NotQfThisWorld
