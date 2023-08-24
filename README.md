@@ -68,7 +68,8 @@ No need to write the full code now, you can adjust it as you go.
 ![20230822_181004](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/2e862715-6fb2-49dc-9b35-af4becda76f9)
 ![20230822_181655](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/795b4370-064a-4b11-ab96-1d6bce60db9d)
 ![20230822_181719](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/4fa35747-e82b-4fe7-90df-0d47fe08c369)
-![20230824_154704](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/506fb47e-8559-483d-8a46-09d711516d03)![20230824_154734](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/830dfc34-6bcf-4f89-88bd-564a9c5da65f)![20230824_154954](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/2178a2a0-7e6a-4a77-ba93-ab379ae5a429)
+![20230824_160533](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/0057b305-163c-4c66-8f70-cc37f5f22ef4)
+
 
 
 
