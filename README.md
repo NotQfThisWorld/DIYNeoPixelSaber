@@ -1,6 +1,7 @@
 # DIYNeoPixelSaber
 
-![Uploading 20230822_165131.jpg…]()
+![20230822_165131](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/26a6d34b-572b-4f51-a0a5-79b457a6e0d0)
+
 
 This is the github for a project I made. It is called the NeoPixelSaber.
 My goal was to make a lightsaber using an arduino nano, and relativly cheap parts.
