@@ -11,39 +11,39 @@ My goal was to make a lightsaber using an arduino nano, and relativly cheap part
 ## What I used:
 
 ### Materials:
-_- 1x Arduino Nano_
-_- 1x momentary push-button_
-_- 1x powerbutton from a Dolce Gusto capsule coffe maker_
-_- 1x On/Off switch_
-_- 2x 1m 144LED WS2812B Addressable LED-strip_
-_- 1x Capacitor 1000 µF from a printer-powersupply_
-_- 1x Capacitor 2200 µF from a printer-powersupply_
-_- 2x 330Ω resistor_
-_- 2x 10 000Ω resistor_
-_- A 4pin plug from a printer-powersupply_
-_- 1x 2x2 AA battery holder_
-_- TP cable_
-_- Bubblewrap_
-_- 3x Schotch Tape Rolls_
-_- 1x Milk Screw Cap_
-_- Small 12x2cm acrylic plate I had lying around._
-_- 4x 1,2V rechargable AA-batteries_
-_- 1m PP-tube 32mm_
-_- 1m PP-tube 40mm_
-_- 1x Sleeve for 32mm tubes_
-_- Some random bike parts found in a trench_
-_- Screews normally used in pc-cabinets_
-_- Hobby popsicle-sticks_
-_- Electrical Tape_
+- 1x Arduino Nano_
+- 1x momentary push-button_
+- 1x powerbutton from a Dolce Gusto capsule coffe maker_
+- 1x On/Off switch_
+- 2x 1m 144LED WS2812B Addressable LED-strip_
+- 1x Capacitor 1000 µF from a printer-powersupply_
+- 1x Capacitor 2200 µF from a printer-powersupply_
+- 2x 330Ω resistor_
+- 2x 10 000Ω resistor_
+- A 4pin plug from a printer-powersupply_
+- 1x 2x2 AA battery holder_
+- TP cable_
+- Bubblewrap_
+- 3x Schotch Tape Rolls_
+- 1x Milk Screw Cap_
+- Small 12x2cm acrylic plate I had lying around._
+- 4x 1,2V rechargable AA-batteries_
+- 1m PP-tube 32mm_
+- 1m PP-tube 40mm_
+- 1x Sleeve for 32mm tubes_
+- Some random bike parts found in a trench_
+- Screews normally used in pc-cabinets_
+- Hobby popsicle-sticks_
+- Electrical Tape_
 
 ### Tools:
-_- Soldering Iron_
-_- Knife_
-_- Circle Saw_
-_- Sandpaper_
-_- Paint and spray-paint_
-_- Drill_
-_- Hotglue-gun_
+- Soldering Iron_
+- Knife_
+- Circle Saw_
+- Sandpaper_
+- Paint and spray-paint_
+- Drill_
+- Hotglue-gun_
 
 
 
