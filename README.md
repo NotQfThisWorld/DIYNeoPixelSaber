@@ -11,39 +11,39 @@ My goal was to make a lightsaber using an arduino nano, and relativly cheap part
 ## What I used:
 
 ### Materials:
-- 1x Arduino Nano_
-- 1x momentary push-button_
-- 1x powerbutton from a Dolce Gusto capsule coffe maker_
-- 1x On/Off switch_
-- 2x 1m 144LED WS2812B Addressable LED-strip_
-- 1x Capacitor 1000 µF from a printer-powersupply_
-- 1x Capacitor 2200 µF from a printer-powersupply_
-- 2x 330Ω resistor_
-- 2x 10 000Ω resistor_
-- A 4pin plug from a printer-powersupply_
-- 1x 2x2 AA battery holder_
-- TP cable_
-- Bubblewrap_
-- 3x Schotch Tape Rolls_
-- 1x Milk Screw Cap_
-- Small 12x2cm acrylic plate I had lying around._
-- 4x 1,2V rechargable AA-batteries_
-- 1m PP-tube 32mm_
-- 1m PP-tube 40mm_
-- 1x Sleeve for 32mm tubes_
-- Some random bike parts found in a trench_
-- Screews normally used in pc-cabinets_
-- Hobby popsicle-sticks_
-- Electrical Tape_
+- _1x Arduino Nano_
+- _1x momentary push-button_
+- _1x powerbutton from a Dolce Gusto capsule coffe maker_
+- _1x On/Off switch_
+- _2x 1m 144LED WS2812B Addressable LED-strip_
+- _1x Capacitor 1000 µF from a printer-powersupply_
+- _1x Capacitor 2200 µF from a printer-powersupply_
+- _2x 330Ω resistor_
+- _2x 10 000Ω resistor_
+- _A 4pin plug from a printer-powersupply_
+- _1x 2x2 AA battery holder_
+- _TP cable_
+- _Bubblewrap_
+- _3x Schotch Tape Rolls_
+- _1x Milk Screw Cap_
+- _Small 12x2cm acrylic plate I had lying around._
+- _4x 1,2V rechargable AA-batteries_
+- _1m PP-tube 32mm_
+- _1m PP-tube 40mm_
+- _1x Sleeve for 32mm tubes_
+- _Some random bike parts found in a trench_
+- _Screews normally used in pc-cabinets_
+- _Hobby popsicle-sticks_
+- _Electrical Tape_
 
 ### Tools:
-- Soldering Iron_
-- Knife_
-- Circle Saw_
-- Sandpaper_
-- Paint and spray-paint_
-- Drill_
-- Hotglue-gun_
+- _Soldering Iron_
+- _Knife_
+- _Circle Saw_
+- _Sandpaper_
+- _Paint and spray-paint_
+- _Drill_
+- _Hotglue-gun_
 
 
 
