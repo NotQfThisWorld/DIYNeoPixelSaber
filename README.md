@@ -1,5 +1,5 @@
 # DIYNeoPixelSaber
-This is the github for a project I am working on. It is called the NeoPixelSaber.
+This is the github for a project I made. It is called the NeoPixelSaber.
 My goal was to make a lightsaber using an arduino nano, and relativly cheap parts.
 
 ## Part List:
@@ -30,7 +30,7 @@ My goal was to make a lightsaber using an arduino nano, and relativly cheap part
 
 ## Suggested Procedure
 
-This is only a brief explination of how I would want to go forward. Be carefull, so that you don't damage any materials or equiment. I take no responsibility for any damaged materials or equipment. Make sure you know what you are doing.
+This is only a brief explanation of you _can_ do it. This is because I want you to make your own neopixelsaber, not just copy mine. Be carefull, so that you don't damage any materials or equiment. I take no responsibility if you mess up. Make sure you know what you are doing. It is wise to read through the whole thing _before_ beginning.
 
 ###   --Hilt--
 1. First, you will want to prototype your project. I used a 24 pixel neopixel ring, some buttons and some LEDS. I recomend using an arduino UNO for prototyping, for easy connectivity, however that is only a personal preference.
@@ -54,10 +54,10 @@ No need to write the full code now, you can adjust it as you go.
 14. Place the buttons on the electronics compartment. Make sure that they are as close to flush with the inside of the hilt as possible.
 15. Find out where the buttons lines up. Drill holes for the buttons.
 16. Now make sure that everything fits together. The electronics inside the hilt, the blade inside the top of the hilt/the sleeve.
-17. Upload the code. Make sure to update any pins or led-strip lengths before uploading, in case you have prototyped with another board and/or led-strip. Adjust the code as you see fit. Colors is very likely to need adjusting, as the white tube dissorts some of the colors quite a bit.
+17. Upload the code. Make sure to update any pins or LED-strip lengths before uploading, in case you have prototyped with another board and/or LED-strip. Adjust the code as you see fit. Colors is very likely to need adjusting, as the white tube dissorts some of the colors quite a bit.
 18. Now comes the fun part: Decorating. There is really no right or wrong here. Just make sure that nothing of your decor comes in the way for the electronics or the button-holes. I would start with the paint, before adding other decor later.
 19. Your lightsaber is pretty much done. Congrats, young padawan. You have successfully constructed you very own lightsaber.
 20. Show it to all of your friends :D.
 
 ## Questions?
-If you have any questions, need help with anything, or have suggestions for anything, shoot me a message on discord @NotQfThisWorld
+If you have any questions, need help with anything, or have suggestions, shoot me a message on discord @NotQfThisWorld
