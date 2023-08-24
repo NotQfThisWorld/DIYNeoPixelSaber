@@ -60,4 +60,4 @@ No need to write the full code now, you can adjust it as you go.
 20. Show it to all of your friends :D.
 
 ## Questions?
-If you have any questions, need help with anything, or have suggestions, shoot me a message on discord @NotQfThisWorld
+If you have any questions, need help with anything, or have suggestions, shoot me a message on Discord: @NotQfThisWorld
