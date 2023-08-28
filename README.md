@@ -87,22 +87,22 @@ No need to write the full code now, you can adjust it as you go.
 ![20230822_181719](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/4fa35747-e82b-4fe7-90df-0d47fe08c369)
 ![20230824_160533](https://github.com/NotQfThisWorld/DIYNeoPixelSaber/assets/113789597/0057b305-163c-4c66-8f70-cc37f5f22ef4)
 
-##QnA
+## QnA
 
 ### Q: Why no sound?
 A: Because of interrupt problems. When I tried to use a buzzer with a steady tone (the humming), the sound would change everytime something happened on the blade. Since it was unreliable (and that I had no way of detecting when the user would swing his blade) I decided to cut the feature. I may add it in the future, maybe with a dedicated arduino to controll the sound effects.
 
 ### Q: How much did it cost?
-A: A rough estimate is around 1500 Norwegian Kroners, which translates into around 140 dollars.
+A: A rough estimate is around 1500 Norwegian Kroners, which translates into around 140 American dollars.
 
 ### Q: How long time did you spend on the project?
-A: I started in late December 2022, and finished around 17. May 2023. So, around 4 months.
+A: I started in late December 2022, and finished around 17. May 2023. So, around 4 months. I still do tweaks to the code, so you could say that I may never be quite done.
 
 ### Q: What was the hardest part?
-A: The hardest part was probably the blade. Getting the strip with the diffuser around it into the blade without making it uneven, was really hard. And doing the electronics part of the blade was hard, since I had to make sure that the electronics part wouldn't show on the outside.
+A: The hardest part was probably the blade. Getting the strip, with the diffuser, into the blade without making it uneven, was really hard. And doing the electronics part of the blade was hard, since I had to make sure that it wouldn't be to visible on the outside of the blade.
 
 ### Q: Will there be a version 2?
-A: Only time will tell. I may upgrade the current saber with features (Sound maybe?), but I really want to make a version 2 when I am more experienced and have more resources.
+A: Only time will tell. I may upgrade the current saber with features (Sound maybe?), but I really want to make a version 2 when I am more experienced and have access to more resources.
 
 ## Contact Me
-If you have any questions, need help with anything, or have suggestions, feel free to shoot me a message on Discord: @NotQfThisWorld
+If you have any questions, need help with anything, or have suggestions, feel free to shoot me a message on Discord: _@NotQfThisWorld_
