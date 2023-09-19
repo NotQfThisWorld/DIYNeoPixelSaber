@@ -6,7 +6,15 @@
 This is the github for a project I made. It is called the NeoPixelSaber.
 My goal was to make a lightsaber using an arduino nano, and relativly cheap or even salvaged parts.
 
+## Features:
 
+- Powered by 4 AA NiMH2 batteries.
+- Sound effects which is able to be turned off.
+- 8 different colors
+- Detachable blade
+- Surprisingly sturdy (it can take quite a few beatings)
+- Blaster effects
+- Tipdrag effect (I think it is horrible though...)
 
 ## What I used:
 
@@ -14,7 +22,9 @@ My goal was to make a lightsaber using an arduino nano, and relativly cheap or e
 - _1x Arduino Nano_
 - _1x momentary push-button_
 - _1x powerbutton from a Dolce Gusto capsule coffe maker_
+- _1x speaker from some toy or headset or something_
 - _1x On/Off switch_
+- _1x slide switch_
 - _2x 1m 144LED WS2812B Addressable LED-strip_
 - _1x Capacitor 1000 µF from a printer-powersupply_
 - _1x Capacitor 2200 µF from a printer-powersupply_
@@ -61,7 +71,7 @@ No need to write the full code now, you can adjust it as you go.
 6. Make the electronics compartment. I used a 2x2 AA batteryholder as my starting point. I attached a plate to the back of the holder, to hold the Arduino and the electronics. I added a couple of empty scotch tape rolls to it to make it so that the electronics compartment would fit nicely inside the hilt. Test it inside the "hilt tube" to see if it fits. Remember, that everything you do from here on, must also be able to fit inside the tube.
 7. Plan where you want to place the arduino Nano, what wires you need to solder, what and how many buttons you want, and find out how you will want to go forward.
 8. Start soldering. Make sure you have enough length on each wire (better safe than sorry) and that the wires are drawn trough any holes or channels that you want them to go through.
-9. Remember to add a main powerswitch. I put mine inside of the bottom cap, but If you can find a better place for it, go ahead.
+9. Remember to add a main powerswitch. I put mine inside of the bottom cap behind the speaker, but If you can find a better place for it, go ahead.
 
 ###   --Blade--
 10. Cut the strips to length. Glue the two strips together, back to back. Solder the connections to the plug. Add a 1000 µF capasitor between the + and -.
@@ -89,20 +99,20 @@ No need to write the full code now, you can adjust it as you go.
 
 ## QnA
 
-### Q: Why no sound?
-A: Because of interrupt problems. When I tried to use a buzzer with a steady tone (the humming), the sound would change everytime something happened on the blade. Since it was unreliable (and that I had no way of detecting when the user would swing his blade) I decided to cut the feature. I may add it in the future, maybe with a dedicated arduino to controll the sound effects.
+### Q: Why only 8-bit sound?
+A: Because I originally didn't plan to include sound at all, because I ran into interupt-problems. I managed to get sound working later down the line, but only 8bit (basically just using the built-in tone() function with a speaker). I would have liked to add better sound, with the sound files on a micro-sd card or something, but as of rigth now, this is out of the scope of this project.
 
 ### Q: How much did it cost?
 A: A rough estimate is around 1500 Norwegian Kroners, which translates into around 140 American dollars.
 
 ### Q: How long time did you spend on the project?
-A: I started in late December 2022, and finished around 17. May 2023. So, around 4 months. I still do tweaks to the code, so you could say that I may never be quite done.
+A: I started in late December 2022, and finished around 17. May 2023. So, around 4 months. I still do tweaks to the code, and even add more features (like the sound effects, which I added in September 2023), so you could say that I may never be quite done.
 
 ### Q: What was the hardest part?
 A: The hardest part was probably the blade. Getting the strip, with the diffuser, into the blade without making it uneven, was really hard. And doing the electronics part of the blade was hard, since I had to make sure that it wouldn't be to visible on the outside of the blade.
 
 ### Q: Will there be a version 2?
-A: Only time will tell. I may upgrade the current saber with features (Sound maybe?), but I really want to make a version 2 when I am more experienced and have access to more resources.
+A: Only time will tell. I may upgrade the current saber with features (better sound maybe?), but I really want to make a version 2 when I am more experienced and have access to more resources.
 
 ## Contact Me
 If you have any questions, need help with anything, or have suggestions, feel free to shoot me a message on Discord: _@NotQfThisWorld_
