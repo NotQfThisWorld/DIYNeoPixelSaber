@@ -1,28 +1,30 @@
 #include <FastLED.h>
 
 // Led Strip Pins
-  const int DATA_PINF = 10;      // Front strip PIN
-  const int DATA_PINB = 11;      // Back strip PIN
+  const int DATA_PINF = 10, DATA_PINB = 11; 
+
+// Sound Variables
+  const int speakerPin = 5;
+  int hum = 40, deflectSound = 400, igniteRetract = 200;
 
 // Number of Leds
-  const int NUM_LEDSF = 117; // Front strip LED_COUNT
-  const int NUM_LEDSB = 117; // Back strip LED_COUNT
-// Brigthness
-  const int BRIGHTNESS = 100;
+  const int NUM_LEDSF = 117, NUM_LEDSB = 117;
 
-CRGB ledsF[NUM_LEDSF];
-CRGB ledsB[NUM_LEDSB];
+// Brigthness
+  const int BRIGHTNESS = 150;
+
+// Strip Objects  
+  CRGB ledsF[NUM_LEDSF];
+  CRGB ledsB[NUM_LEDSB];
 
 // Delayvalue
   int DELAYVAL = 10; //Milliseconds between each pixel on the blade lighting up.
 
 // SENSORS AND BUTTON PINS
-  const int igniteButton = 2;  // Nano: 2
-  const int actionButton = 4;  // Nano: 4
+  const int igniteButton = 2, actionButton = 4;
 
 // State values for different sensor readings (either HIGH or LOW)
-  int actionBtnState;
-  int igniteBtnState;
+  int actionBtnState, igniteBtnState;
 
 // BOOLEANS
   bool bladeOff = true; // Boolean to check if blade is on or not
@@ -30,8 +32,7 @@ CRGB ledsB[NUM_LEDSB];
   bool pulseDown = true; // Boolean to check if the blade is pulsing down or not
 
 // Power-Button-Indicator LED Pins (if you use them.)
-  const int redIndi = 8; // Nano: 8
-  const int greenIndi = 7; // Nano: 7
+  const int redIndi = 8, greenIndi = 7;
 
 // Note about the indicator LEDS:
   /* For some or other weird reason, the green and red input are switched (marked wrong I guess)
@@ -42,29 +43,19 @@ CRGB ledsB[NUM_LEDSB];
 // COLOR VALUES
 
   // Primary color values, for blade
-    int red;
-    int green;
-    int blue;
+    int red, green, blue;
 
   // Secondary color values, for MeltTip
-    int redTip;
-    int greenTip;
-    int blueTip;
+    int redTip, greenTip, blueTip;
 
   // Third color values, for blaster deflect
-    int redDef;
-    int greenDef;
-    int blueDef;
+    int redDef, greenDef, blueDef;
 
   // Forth color values, for fade effect
-    int redFade;
-    int greenFade;
-    int blueFade;
+    int redFade, greenFade, blueFade;
 
   // Fifth color values, for tip in meltTip()
-    int tipRed;
-    int tipGreen;
-    int tipBlue;
+    int tipRed, tipGreen, tipBlue;
     // Using a secondary set of variables for this, since for some or other weird reason, the FastLED.setRGB command would alter the *color*Tip variables.
 
 // Int for which color is chosen
@@ -91,10 +82,14 @@ CRGB ledsB[NUM_LEDSB];
   String modeName;
 
 // pulsinging Light Variables
-  int pulsingLowest;
-  int pulsingStep;
-  int pulsingBrightness;
-  int pulseAmount;
+  int pulseLowest, pulseLow, pulsingBrightness, pulseAmount, pulseFreq;
+
+// Millis Variables
+  unsigned long msStart = 0;
+  unsigned long msPrevPulseDown = 0, msPrevPulseUp = 0; // To check how long it is since it last pulsed
+  unsigned long msPrevModeChange = 0, msModeInterval = 500; // To check how long it is since it last changed mode
+  unsigned long msPrevBlaster = 0, msBlasterInterval = 500; // To check how long it is since it last played blaster deflect effect.
+  unsigned long msPrevBtnLight = 0; // To check how long it is since the button light changed.
 
 void setup() {
 
@@ -102,7 +97,7 @@ void setup() {
     pulsingBrightness = BRIGHTNESS;  
 
   // *** Debugging ***
-    Serial.begin(9600);
+    Serial.begin(115200);
 
   // Defining Led Indicator pins as OUTPUTs
     pinMode(redIndi, OUTPUT);
@@ -123,10 +118,10 @@ void setup() {
       delay(10);
     }
 
-  // limit powerdraw to what the arduino/powersupply can supply
-    FastLED.setMaxPowerInVoltsAndMilliamps(5,1000); // (Volts,Millamps);
+  // limit powerdraw of the strips to what the batteries can supply
+    FastLED.setMaxPowerInVoltsAndMilliamps(5,2000); // (Volts,Millamps);
 
-  setMode(false); // Runs the setMode program once, to make sure a color is selected before the user powers up his saber.
+  setMode(); // Runs the setMode program once, to make sure a color is selected before the user powers up their saber.
 
   // Turn on Red indicator, to show that the lightsaber is fully powered on and ready to use
     digitalWrite(redIndi, 1);
@@ -134,7 +129,8 @@ void setup() {
 }
 
 void loop() {
-  
+
+  msStart = millis();
   // State values determined by value comming from buttons/shock sensor
     igniteBtnState = digitalRead(igniteButton);
     actionBtnState = digitalRead(actionButton);
@@ -144,18 +140,34 @@ void loop() {
 
       // Start Blade
         
-        modeCase = modeCase - 1;
-        setMode(false); // Sets the colors once more, because of weird bug that causes it to reset after retracting blade.
-        startBlade(red, green, blue);
+        //modeCase = modeCase - 1;
+        //setMode(); // Sets the colors once more, because of weird bug that causes it to reset after retracting blade.
+        igniteBlade(red, green, blue);
 
 
     }
-    else if (actionBtnState == HIGH && igniteBtnState == LOW) { // Runs the setMode function if the action button is pressed.
+    else if (actionBtnState == HIGH && igniteBtnState == LOW && (msStart-msPrevModeChange > msModeInterval)) { // Runs the setMode function if the action button is pressed.
 
-      // Cycle to another color
-        setMode(true);
+      // Cycle to another color/mode
+        setMode();
+        
+        msPrevModeChange = msStart;
 
-    }  
+
+
+    }
+    else if (actionBtnState == HIGH && igniteBtnState == HIGH) {
+
+      // Some bonus feature maybe?
+      
+    }
+    else if (msStart-msPrevBtnLight > 200){
+
+    // Turn on led indicator after color is chosen
+    digitalWrite(greenIndi, 0); 
+    msPrevBtnLight = msStart;
+
+    } 
   }
   else { // If blade is on...
     if (igniteBtnState == HIGH && actionBtnState == LOW) { // Retracts the blade if the ignite button is pressed.
@@ -165,10 +177,12 @@ void loop() {
 
     }
 
-    else if (actionBtnState == HIGH && igniteBtnState == LOW && tipChange) { // Checks if the knock switch has been disturbed. Runs blasterDeflect function if true.
+    else if (actionBtnState == HIGH && igniteBtnState == LOW && tipChange && (msStart-msPrevBlaster > msBlasterInterval)) { // Checks if the knock switch has been disturbed. Runs blasterDeflect function if true.
 
       // Blaster Deflect Effect
         blasterDeflect();
+      
+      msPrevBlaster = msStart;
 
     }
 
@@ -185,13 +199,18 @@ void loop() {
 
     }
     
-    // Pulsing Light
+    if (msStart-msPrevPulseDown > pulseFreq){
+      
       pulsingAnimation();
-           
+
+      msPrevPulseDown = msStart;
+    }   
   }  
 }
 
-void startBlade(int red, int green, int blue) { // Startanimation for blade
+void igniteBlade(int red, int green, int blue) { // Startanimation for blade
+
+  tone(speakerPin, igniteRetract);
 
   // Set Brightess a little bit higher, for a bit of a "boom effect"
     FastLED.setBrightness(  BRIGHTNESS + 20);  
@@ -202,7 +221,7 @@ void startBlade(int red, int green, int blue) { // Startanimation for blade
   int lastLoop = 0;
 
   for(int i=0; i<11; i++) { // Starts each pixel with the set color, with DELAYVAL between each
-    for(int j=lastLoop; j<lastLoop + 9; j++){
+    for(int j=lastLoop; j<lastLoop + 10; j++){
     ledsF[j].setRGB( red, green, blue);
     ledsB[j].setRGB( red, green, blue);
     }
@@ -232,9 +251,16 @@ void startBlade(int red, int green, int blue) { // Startanimation for blade
   // *** Debugging ***
     Serial.println("Blade opened");
   
+    tone(speakerPin, hum);
+  
 }
 
 void retractBlade() { // Retract animation for blade
+
+  tone(speakerPin, igniteRetract, 200);
+
+  // Setting Brightness back to default here, so the blade wont be on its "darker" end of its pulsing sequence.
+    FastLED.setBrightness(BRIGHTNESS); 
 
   // Turn off green indicator, to turn both Leds on (see line 39)
     digitalWrite(greenIndi, 0);
@@ -271,16 +297,17 @@ void retractBlade() { // Retract animation for blade
   
 }
 
-void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
+void setMode() { // Sets Mode (colors, effect intensities etc.)
 
   // Write on to green indicator to turn both off (see line 39);
     digitalWrite(greenIndi, 1);
   
   // Defaults. Can and Will be changed in some switch cases.
     // Delay and pulse defaults
-      DELAYVAL = 15;  // Sets DELAYVAL to 2 (default). Can be changed in switch statement.
-      pulsingStep = 10; // Sets pulsingStep to 10 (default). Can be changed in switch statement.
-      pulseAmount = 2; // Sets pulseAmount to 2 (default). Can be changed in switch statement.
+      DELAYVAL = 15;  // How fast the blade ignites/retracts.
+      pulseLow = 40; // The lowest brightness the pulsing can have during its cycle.
+      pulseAmount = 20; // How much the brightness changes with each cycle.
+      pulseFreq = 5; // How often the pulse cycle should start.
 
   switch (modeCase) {
     case 0: // BLUE
@@ -296,9 +323,6 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
         redDef = 200;
         greenDef = 200;
         blueDef = 255;
-
-      // pulsing Intensity Change
-        pulseAmount = 1;
 
       modeName = "BLUE";
       modeCase++;
@@ -320,9 +344,10 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
       // DELAYVAL Change
         DELAYVAL = 20;  // Changes delayval to make a more dramatic blade opening/retracting
 
-      // pulsing Intensity Change
-        pulsingStep = 25;
-        pulseAmount = 10;
+      // Pulsing Intensity Change
+        pulseLow = 130;
+        pulseAmount = 40;
+        pulseFreq = 5;
 
       modeName = "RED";
       modeCase++;
@@ -342,9 +367,10 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
         greenDef = 255;
         blueDef = 200;
 
-      // pulsing Intensity Change
-        pulsingStep = 8;
-        pulseAmount = 1;
+      // Pulsing Intensity Change
+        pulseLow = 32;
+        pulseAmount = 8;
+        pulseFreq = 20;
 
       modeName = "GREEN";
       modeCase++;
@@ -363,6 +389,11 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
         redDef = 255;
         greenDef = 200;
         blueDef = 180;
+
+      // Pulsing Intensity Change
+        pulseLow = 60;
+        pulseAmount = 10;
+        pulseFreq = 5;
 
       modeName = "GOLD";
       modeCase++;
@@ -385,8 +416,9 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
         DELAYVAL = 20;  // Changes delayval to make a more dramatic blade opening/retracting
 
       // Pulsing Intensity Change
-        pulsingStep = 20;
-        pulseAmount = 10;      
+        pulseLow = 100;
+        pulseAmount = 50;  
+        pulseFreq = 5;    
 
         modeName = "ORANGE";
         modeCase ++;
@@ -407,10 +439,12 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
         blueDef = 255;
       
       // Pulsing Intensity Change
-        pulseAmount = 1;
+        pulseLow = 60;
+        pulseAmount = 15;
+        pulseFreq = 10;
 
-      modeName = "AQUA";
-      modeCase++;
+        modeName = "AQUA";
+        modeCase++;
     break;
 
     case 6: // Magenta
@@ -428,8 +462,9 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
         blueDef = 255;
 
       // Pulsing Intensity Change
-        pulsingStep = 15;
-        pulseAmount = 3; 
+        pulseLow = 80;
+        pulseAmount = 20;
+        pulseFreq = 10;
 
       modeName = "Magenta";
       modeCase++;
@@ -452,8 +487,9 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
         DELAYVAL = 18;  // Changes delayval to make a more dramatic blade opening/retracting
 
       // Pulsing Intensity Change
-        pulsingStep = 15;
-        pulseAmount = 3;
+        pulseLow = 80;
+        pulseAmount = 20;
+        pulseFreq = 5;
       
       modeName = "PURPLE";
       modeCase ++;
@@ -476,7 +512,7 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
         DELAYVAL = 18;  // Changes delayval to make a more dramatic blade opening/retracting
 
       // Pulsing Intensity Change
-        pulsingStep = 0;
+        pulseLow = 0;
         pulseAmount = 0;
 
       modeName = "WHITE";
@@ -485,28 +521,22 @@ void setMode(bool withDelay) { // Sets Mode (colors, effect intensities etc.)
 
     case 9:
       modeCase = 0;
-      setMode(false);
+      setMode();
     break;
 
   }
-
-  if (withDelay){ // If there should be a delay when changing mode
-    delay(50);
-  }
-
-  // Turn on led indicator after color is chosen
-    digitalWrite(greenIndi, 0);
   
   // *** Debugging ***
     Serial.print("Selected Mode: ");
     Serial.println(modeName);
 
-  if (withDelay){ // If there should be a delay after changing mode
-    delay(300);
-  }
 }
 
 void blasterDeflect() { // Blaster Deflect Effect
+
+  FastLED.setBrightness(BRIGHTNESS); // Setting Brightness back to default here, so the blade wont be on its "darker" end of its pulsing sequence.
+
+  tone(speakerPin, deflectSound, 100);
 
   // Forth color values, for fade effect
     redFade = redDef;
@@ -517,7 +547,7 @@ void blasterDeflect() { // Blaster Deflect Effect
     randomEffectStartPos = random(minStartPos, maxStartPos);
 
   // *** Debugging ***
-    Serial.println(randomEffectStartPos);
+    //Serial.println(randomEffectStartPos);
 
   // Set colors to the deflect values in selected area
   for(int j=randomEffectStartPos; j<randomEffectStartPos + blastSize; j++ ) {
@@ -538,12 +568,11 @@ void blasterDeflect() { // Blaster Deflect Effect
 
       
     }
-    pulsingAnimation(); // Play pulsinganimation, for more vareity
-    pulsingAnimation();
-    pulsingAnimation(); // Tree times, to make the pulsing as close to the running pulsing as possible  
     FastLED.show();
 
     delay(5);
+
+    tone(speakerPin, hum);
   }
 }
 
@@ -591,20 +620,20 @@ void meltTip(bool on) { // Changes the tipleds to the tipmelt color if called wi
 
 void pulsingAnimation() { // Pulsing animation for variation
 
-  pulsingLowest = BRIGHTNESS - pulsingStep; // pulsingLowest is BRIGHTNESS - pulsingStep. pulsingStep is set in setMode program.
+  pulseLowest = BRIGHTNESS - pulseLow; // pulseLowest is BRIGHTNESS - pulseLow. pulseLow is set in setMode program.
 
   if (pulseDown) {
-    for (int j=0; j<pulseAmount; j++ ) {
-      pulsingBrightness --;
-    }
-    if (pulsingBrightness < pulsingLowest) {
+
+    pulsingBrightness = pulsingBrightness - pulseAmount;
+
+    if (pulsingBrightness < pulseLowest) {
       pulseDown = ! pulseDown;
     }
   }
   else {
-    for (int j=0; j<pulseAmount; j++ ) {
-      pulsingBrightness ++;
-    }
+
+    pulsingBrightness = pulsingBrightness + pulseAmount;
+
     if (pulsingBrightness >= BRIGHTNESS) {
       pulseDown = ! pulseDown;
     }
@@ -615,7 +644,7 @@ void pulsingAnimation() { // Pulsing animation for variation
     FastLED.show();
   
   // *** Debugging ***
-    //Serial.println(pulsingBrightness);
+  // Serial.println(pulsingBrightness);
   
 }
 
