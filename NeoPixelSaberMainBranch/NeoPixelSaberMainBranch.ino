@@ -30,6 +30,8 @@
   bool bladeOff = true; // Boolean to check if blade is on or not
   bool tipChange = false; // Boolean to check if tip is different color or not
   bool pulseDown = true; // Boolean to check if the blade is pulsing down or not
+  bool blueRedCrash = false; // Boolean to check if the blue and red crash mode is active or not
+  bool spectrumMode = false; // Boolean to check if the spectrummode is active or not
 
 // Power-Button-Indicator LED Pins (if you use them.)
   const int redIndi = 8, greenIndi = 7;
@@ -57,6 +59,11 @@
   // Fifth color values, for tip in meltTip()
     int tipRed, tipGreen, tipBlue;
     // Using a secondary set of variables for this, since for some or other weird reason, the FastLED.setRGB command would alter the *color*Tip variables.
+  
+  // Sixth color values, for temporary use in fancy effects
+    // Not currently used... int redTemp, greenTemp, blueTemp;
+  
+  uint8_t hue = 0;
 
 // Int for which color is chosen
   int modeCase;
@@ -90,6 +97,16 @@
   unsigned long msPrevModeChange = 0, msModeInterval = 500; // To check how long it is since it last changed mode
   unsigned long msPrevBlaster = 0, msBlasterInterval = 500; // To check how long it is since it last played blaster deflect effect.
   unsigned long msPrevBtnLight = 0; // To check how long it is since the button light changed.
+
+// Variables used in calculations
+
+int halfBlade = NUM_LEDSF/2;
+int bladeSegLenght = 10;
+int bladeSegNum = NUM_LEDSF/bladeSegLenght;
+int bladeSegRemain = NUM_LEDSF-bladeSegNum;
+
+int colorIncrease = 255/halfBlade;
+
 
 void setup() {
 
@@ -139,9 +156,6 @@ void loop() {
     if (igniteBtnState == HIGH) { //  Starts the blade if the ignite button is pressed, or if the shocksensor is disturbed (enables stab ignition)
 
       // Start Blade
-        
-        //modeCase = modeCase - 1;
-        //setMode(); // Sets the colors once more, because of weird bug that causes it to reset after retracting blade.
         igniteBlade(red, green, blue);
 
 
@@ -157,11 +171,9 @@ void loop() {
 
     }
     else if (actionBtnState == HIGH && igniteBtnState == HIGH) {
-
-      // Some bonus feature maybe?
       
     }
-    else if (msStart-msPrevBtnLight > 200){
+    else if (msStart-msPrevBtnLight > 100){
 
     // Turn on led indicator after color is chosen
     digitalWrite(greenIndi, 0); 
@@ -173,29 +185,34 @@ void loop() {
     if (igniteBtnState == HIGH && actionBtnState == LOW) { // Retracts the blade if the ignite button is pressed.
 
       // Retract Blade
-        retractBlade();
+        retractBlade();  
 
     }
 
     else if (actionBtnState == HIGH && igniteBtnState == LOW && tipChange && (msStart-msPrevBlaster > msBlasterInterval)) { // Checks if the knock switch has been disturbed. Runs blasterDeflect function if true.
 
+      if (!blueRedCrash && !spectrumMode){
       // Blaster Deflect Effect
         blasterDeflect();
       
       msPrevBlaster = msStart;
+      }
 
     }
-
     else if (actionBtnState == HIGH && tipChange && igniteBtnState == HIGH) { // Checks if actionbutton is pressed, and tipchange is true. Turns on tip if both true
-    
-      // Melttip on
-        meltTip(true);
+
+      if (!blueRedCrash && !spectrumMode){
+        // Melttip on
+          meltTip(true);
+      }
       
     }
     else if (actionBtnState == LOW && !tipChange && igniteBtnState == LOW) { // Checks if actionbutton is not pressed, and if tipchange is false. Turns of tip if both are false
-    
-      // Melttip off
-        meltTip(false);
+
+      if (!blueRedCrash && !spectrumMode){
+        // Melttip off
+          meltTip(false);
+      }
 
     }
     
@@ -204,8 +221,12 @@ void loop() {
       pulsingAnimation();
 
       msPrevPulseDown = msStart;
-    }   
-  }  
+    }
+  }
+
+  if (spectrumMode && !bladeOff) {
+    spectrumCycle();
+  }   
 }
 
 void igniteBlade(int red, int green, int blue) { // Startanimation for blade
@@ -215,33 +236,54 @@ void igniteBlade(int red, int green, int blue) { // Startanimation for blade
   // Set Brightess a little bit higher, for a bit of a "boom effect"
     FastLED.setBrightness(  BRIGHTNESS + 20);  
 
-  // Turn off red indicator, to turn both leds on (see line 39)
+  // Turn off red indicator, to turn both leds on (see line 37)
     digitalWrite(redIndi, 0);
   
   int lastLoop = 0;
 
-  for(int i=0; i<11; i++) { // Starts each pixel with the set color, with DELAYVAL between each
-    for(int j=lastLoop; j<lastLoop + 10; j++){
-    ledsF[j].setRGB( red, green, blue);
-    ledsB[j].setRGB( red, green, blue);
+  if (!blueRedCrash) {
+    for(int i=0; i<bladeSegNum; i++) { // Starts each pixel with the set color, with DELAYVAL between each
+      for(int j=lastLoop; j<lastLoop + bladeSegLenght; j++){
+      ledsF[j].setRGB( red, green, blue);
+      ledsB[j].setRGB( red, green, blue);
+      }
+
+      FastLED.show();
+
+      delay(DELAYVAL); // Pause before next pass through loop
+
+      lastLoop = lastLoop + 10;
+    } 
+
+    for(int i=NUM_LEDSF-bladeSegRemain; i<NUM_LEDSF; i++){
+
+      ledsF[i].setRGB( red, green, blue);
+      ledsB[i].setRGB( red, green, blue);
     }
-
-    FastLED.show();
-
-    delay(DELAYVAL); // Pause before next pass through loop
-
-    lastLoop = lastLoop + 10;
-  } 
-
-  for(int i=NUM_LEDSF-7; i<NUM_LEDSF; i++){
-
-    ledsF[i].setRGB( red, green, blue);
-    ledsB[i].setRGB( red, green, blue);
+      FastLED.show();
   }
-    FastLED.show();
+  else if (blueRedCrash) {
+    for(int i=1; i<halfBlade; i++) { // For each pixel...
+
+      ledsF[i].setRGB( 255, 0, 0);
+      ledsB[i].setRGB( 255, 0, 0);
+      ledsF[NUM_LEDSF-i].setRGB( 0, 0, 255);
+      ledsB[NUM_LEDSB-i].setRGB( 0, 0, 255);
+      FastLED.show();
+    }
+    for(int i=0; i<10; i++) { // For each pixel...
+
+      ledsF[halfBlade + i].setRGB( 255, 0, 155);
+      ledsB[halfBlade + i].setRGB( 255, 0, 155);
+      ledsF[halfBlade - i].setRGB( 255, 0, 155);
+      ledsB[halfBlade - i].setRGB( 255, 0, 155);
+      FastLED.show();
+    }
+  }
 
   // Blade is now On
     bladeOff = ! bladeOff; 
+
   delay(10);
   FastLED.setBrightness(BRIGHTNESS);
   
@@ -262,27 +304,47 @@ void retractBlade() { // Retract animation for blade
   // Setting Brightness back to default here, so the blade wont be on its "darker" end of its pulsing sequence.
     FastLED.setBrightness(BRIGHTNESS); 
 
-  // Turn off green indicator, to turn both Leds on (see line 39)
+  // Turn off green indicator, to turn both Leds on (see line 37)
     digitalWrite(greenIndi, 0);
 
   int lastLoop = NUM_LEDSF;
 
-  for(int i=0; i<11; i++) {
-    for(int j=lastLoop; j>lastLoop - 10; j--){
-    ledsF[j] = CRGB::Black;
-    ledsB[j] = CRGB::Black;
+  if (!blueRedCrash) {
+    for(int i=0; i<bladeSegNum; i++) {
+      for(int j=lastLoop; j>lastLoop - bladeSegLenght; j--){
+      ledsF[j] = CRGB::Black;
+      ledsB[j] = CRGB::Black;
+      }
+      lastLoop = lastLoop - bladeSegLenght;
+      FastLED.show();
+      delay(DELAYVAL); // Pause before next pass through loop
+    } 
+
+    for(int i=bladeSegRemain; i>-1; i--){
+      ledsF[i] = CRGB::Black; 
+      ledsB[i] = CRGB::Black;
     }
-    lastLoop = lastLoop - 10;
-    FastLED.show();
-    delay(DELAYVAL); // Pause before next pass through loop
-  } 
-
-  for(int i=7; i>-1; i--){
-    ledsF[i] = CRGB::Black; 
-    ledsB[i] = CRGB::Black;
+      FastLED.show();
   }
-    FastLED.show();
+  else {
+    for(int i=bladeSegLenght; i>0; i--) { // For each pixel...
 
+      ledsF[halfBlade + i].setRGB( 0, 0, 255);
+      ledsB[halfBlade + i].setRGB( 0, 0, 255);
+      ledsF[halfBlade - i].setRGB( 255, 0, 0);
+      ledsB[halfBlade - i].setRGB( 255, 0, 0);
+      FastLED.show();
+    }
+    for(int i=halfBlade; i>-1; i--) { // For each pixel...
+
+      ledsF[i] = CRGB::Black; 
+      ledsB[i] = CRGB::Black;
+      ledsF[NUM_LEDSF-i] = CRGB::Black; 
+      ledsB[NUM_LEDSB-i] = CRGB::Black;
+      FastLED.show();
+    }
+    tipChange = true;
+  }
 
   // Blade is now Off
     bladeOff = ! bladeOff;
@@ -299,7 +361,10 @@ void retractBlade() { // Retract animation for blade
 
 void setMode() { // Sets Mode (colors, effect intensities etc.)
 
-  // Write on to green indicator to turn both off (see line 39);
+  // Set pulsingBrightness back to full, to make sure that it is not on one of its lower cycles before switching color.
+    pulsingBrightness = BRIGHTNESS;
+
+  // Write on to green indicator to turn both off (see line 37);
     digitalWrite(greenIndi, 1);
   
   // Defaults. Can and Will be changed in some switch cases.
@@ -427,7 +492,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
     case 5: // AQUA
       // Primary color
         red = 0;
-        green = 200;
+        green = 255;
         blue = 200;
       // Secondary color
         redTip = 200;
@@ -466,7 +531,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         pulseAmount = 20;
         pulseFreq = 10;
 
-      modeName = "Magenta";
+      modeName = "MAGENTA";
       modeCase++;
     break;
 
@@ -519,9 +584,45 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
       modeCase ++;
     break;
 
-    case 9:
+    case 9: // BLUE AND RED CRASH
+
+      blueRedCrash = !blueRedCrash;
+
+      // Pulsing Intensity Change
+        pulseLow = 50;
+        pulseAmount = 10;
+        pulseFreq = 150;
+
+      modeName = "BLUEREDCRASH";
+      modeCase ++;
+
+    break;
+
+    case 10: // SPECTRUM
+
+      // Primary color
+        red = 255;
+        green = 0;
+        blue = 0;
+        
+      // Pulsing Intensity Change
+        pulseLow = 0;
+        pulseAmount = 0;
+
+      blueRedCrash = !blueRedCrash;
+      spectrumMode = !spectrumMode;
+
+      modeName = "SPECTRUM";
+      modeCase ++;
+
+    break;
+
+    case 11:
+    
+      spectrumMode = !spectrumMode;
       modeCase = 0;
       setMode();
+      
     break;
 
   }
@@ -670,4 +771,17 @@ void fadeValues(int fadestep) { // Changes *color*fade values
   if (blueFade < blue){
     blueFade = blue;
   }
+}
+
+void spectrumCycle() {
+
+  for(int i=0; i<NUM_LEDSF; i++) {
+
+    ledsF[i] = CHSV(hue, 255, 255);
+    ledsB[i] = CHSV(hue, 255, 255);
+    
+  }
+  hue++;
+  FastLED.show();
+
 }
