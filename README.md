@@ -10,7 +10,7 @@ My goal was to make a lightsaber using an arduino nano, and relativly cheap or e
 
 - Powered by 4 AA NiMH2 batteries.
 - Sound effects which is able to be turned off.
-- 8 different colors
+- 8 different colors, plus 2 "bonus" modes.
 - Detachable blade
 - Surprisingly sturdy (it can take quite a few beatings)
 - Blaster effects
