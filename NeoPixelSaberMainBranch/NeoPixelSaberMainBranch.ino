@@ -31,7 +31,7 @@
   bool tipChange = false; // Boolean to check if tip is different color or not
   bool pulseDown = true; // Boolean to check if the blade is pulsing down or not
   bool blueRedCrash = false; // Boolean to check if the blue and red crash mode is active or not
-  bool spectrumMode = false; // Boolean to check if the spectrummode is active or not
+  bool spectrumMode = false; // Boolean to check if the spectrumMode is active or not
 
 // Power-Button-Indicator LED Pins (if you use them.)
   const int redIndi = 8, greenIndi = 7;
@@ -96,16 +96,14 @@
   unsigned long msPrevPulseDown = 0, msPrevPulseUp = 0; // To check how long it is since it last pulsed
   unsigned long msPrevModeChange = 0, msModeInterval = 500; // To check how long it is since it last changed mode
   unsigned long msPrevBlaster = 0, msBlasterInterval = 500; // To check how long it is since it last played blaster deflect effect.
-  unsigned long msPrevBtnLight = 0; // To check how long it is since the button light changed.
 
 // Variables used in calculations
 
 int halfBlade = NUM_LEDSF/2;
-int bladeSegLenght = 10;
-int bladeSegNum = NUM_LEDSF/bladeSegLenght;
-int bladeSegRemain = NUM_LEDSF-bladeSegNum;
+int bladeSegLenght = 10; // How long each segment used in the ignition/retraction functions are.
+int bladeSegNum = NUM_LEDSF/bladeSegLenght; // How many full sets of the segments is able to fit in the bladelenght
+int bladeSegRemain = NUM_LEDSF-bladeSegNum; // How long the remaining segment is.
 
-int colorIncrease = 255/halfBlade;
 
 
 void setup() {
@@ -159,8 +157,15 @@ void loop() {
         igniteBlade(red, green, blue);
 
 
+    }    
+    else if (msStart-msPrevModeChange > msModeInterval/4){
+
+    // Turn on led indicator after color is chosen
+    digitalWrite(greenIndi, 0); 
+
     }
-    else if (actionBtnState == HIGH && igniteBtnState == LOW && (msStart-msPrevModeChange > msModeInterval)) { // Runs the setMode function if the action button is pressed.
+
+    if (actionBtnState == HIGH && igniteBtnState == LOW && (msStart-msPrevModeChange > msModeInterval)) { // Runs the setMode function if the action button is pressed.
 
       // Cycle to another color/mode
         setMode();
@@ -170,16 +175,8 @@ void loop() {
 
 
     }
-    else if (actionBtnState == HIGH && igniteBtnState == HIGH) {
-      
-    }
-    else if (msStart-msPrevBtnLight > 100){
 
-    // Turn on led indicator after color is chosen
-    digitalWrite(greenIndi, 0); 
-    msPrevBtnLight = msStart;
 
-    } 
   }
   else { // If blade is on...
     if (igniteBtnState == HIGH && actionBtnState == LOW) { // Retracts the blade if the ignite button is pressed.
@@ -216,7 +213,7 @@ void loop() {
 
     }
     
-    if (msStart-msPrevPulseDown > pulseFreq){
+    if (msStart-msPrevPulseDown > pulseFreq){ // If it has been long enough since last pulse cycle (decided by pulsefreq), run pulsingAnimation function once.
       
       pulsingAnimation();
 
@@ -224,14 +221,15 @@ void loop() {
     }
   }
 
-  if (spectrumMode && !bladeOff) {
+  if (spectrumMode && !bladeOff) { // If the blade is on and the spectrumMode is active, run one cycle of the spectrumCycle function.
     spectrumCycle();
   }   
 }
 
-void igniteBlade(int red, int green, int blue) { // Startanimation for blade
+void igniteBlade(int red, int green, int blue) { // Ignition-animation for blade
 
-  tone(speakerPin, igniteRetract);
+  // Start ignite sound
+    tone(speakerPin, igniteRetract);
 
   // Set Brightess a little bit higher, for a bit of a "boom effect"
     FastLED.setBrightness(  BRIGHTNESS + 20);  
@@ -241,7 +239,7 @@ void igniteBlade(int red, int green, int blue) { // Startanimation for blade
   
   int lastLoop = 0;
 
-  if (!blueRedCrash) {
+  if (!blueRedCrash) { // If the blueRedCrash isn't active, a normal ignition happens.
     for(int i=0; i<bladeSegNum; i++) { // Starts each pixel with the set color, with DELAYVAL between each
       for(int j=lastLoop; j<lastLoop + bladeSegLenght; j++){
       ledsF[j].setRGB( red, green, blue);
@@ -252,7 +250,7 @@ void igniteBlade(int red, int green, int blue) { // Startanimation for blade
 
       delay(DELAYVAL); // Pause before next pass through loop
 
-      lastLoop = lastLoop + 10;
+      lastLoop = lastLoop + bladeSegLenght;
     } 
 
     for(int i=NUM_LEDSF-bladeSegRemain; i<NUM_LEDSF; i++){
@@ -263,7 +261,7 @@ void igniteBlade(int red, int green, int blue) { // Startanimation for blade
       FastLED.show();
   }
   else if (blueRedCrash) {
-    for(int i=1; i<halfBlade; i++) { // For each pixel...
+    for(int i=1; i<halfBlade; i++) { // Ignites blade from both ends, red on bottom and blue on top. They meet in the middle.
 
       ledsF[i].setRGB( 255, 0, 0);
       ledsB[i].setRGB( 255, 0, 0);
@@ -271,7 +269,7 @@ void igniteBlade(int red, int green, int blue) { // Startanimation for blade
       ledsB[NUM_LEDSB-i].setRGB( 0, 0, 255);
       FastLED.show();
     }
-    for(int i=0; i<10; i++) { // For each pixel...
+    for(int i=0; i<10; i++) {  // Makes it look like the blue and the red phase into eachother in the middle.
 
       ledsF[halfBlade + i].setRGB( 255, 0, 155);
       ledsB[halfBlade + i].setRGB( 255, 0, 155);
@@ -293,13 +291,15 @@ void igniteBlade(int red, int green, int blue) { // Startanimation for blade
   // *** Debugging ***
     Serial.println("Blade opened");
   
+  // Start Hum Sound
     tone(speakerPin, hum);
   
 }
 
-void retractBlade() { // Retract animation for blade
+void retractBlade() { // Retraction-animation for blade
 
-  tone(speakerPin, igniteRetract, 200);
+  // Start retract sound
+    tone(speakerPin, igniteRetract, 200);
 
   // Setting Brightness back to default here, so the blade wont be on its "darker" end of its pulsing sequence.
     FastLED.setBrightness(BRIGHTNESS); 
@@ -309,7 +309,7 @@ void retractBlade() { // Retract animation for blade
 
   int lastLoop = NUM_LEDSF;
 
-  if (!blueRedCrash) {
+  if (!blueRedCrash) { // If the blueRedCrash isn't active, a normal retraction happens.
     for(int i=0; i<bladeSegNum; i++) {
       for(int j=lastLoop; j>lastLoop - bladeSegLenght; j--){
       ledsF[j] = CRGB::Black;
@@ -327,7 +327,7 @@ void retractBlade() { // Retract animation for blade
       FastLED.show();
   }
   else {
-    for(int i=bladeSegLenght; i>0; i--) { // For each pixel...
+    for(int i=bladeSegLenght; i>0; i--) { // Changes the middle from purple into red and blue
 
       ledsF[halfBlade + i].setRGB( 0, 0, 255);
       ledsB[halfBlade + i].setRGB( 0, 0, 255);
@@ -335,7 +335,7 @@ void retractBlade() { // Retract animation for blade
       ledsB[halfBlade - i].setRGB( 255, 0, 0);
       FastLED.show();
     }
-    for(int i=halfBlade; i>-1; i--) { // For each pixel...
+    for(int i=halfBlade; i>-1; i--) { // Retracts the rest of the blade, starting from the middle.
 
       ledsF[i] = CRGB::Black; 
       ledsB[i] = CRGB::Black;
@@ -343,7 +343,6 @@ void retractBlade() { // Retract animation for blade
       ledsB[NUM_LEDSB-i] = CRGB::Black;
       FastLED.show();
     }
-    tipChange = true;
   }
 
   // Blade is now Off
@@ -531,13 +530,13 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         pulseAmount = 20;
         pulseFreq = 10;
 
-      modeName = "MAGENTA";
+      modeName = "Magenta";
       modeCase++;
     break;
 
     case 7: // PURPLE
       // Primary color
-        red = 200;
+        red = 255;
         green = 0;
         blue = 255;
       // Secondary color
@@ -593,7 +592,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         pulseAmount = 10;
         pulseFreq = 150;
 
-      modeName = "BLUEREDCRASH";
+      modeName = "BlueRedCrash";
       modeCase ++;
 
     break;
@@ -612,16 +611,17 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
       blueRedCrash = !blueRedCrash;
       spectrumMode = !spectrumMode;
 
-      modeName = "SPECTRUM";
+      modeName = "spectrumMode";
       modeCase ++;
 
     break;
 
-    case 11:
-    
+    case 11: // Turns of spectrumMode, and resets everything back to case 0.
+
       spectrumMode = !spectrumMode;
       modeCase = 0;
       setMode();
+      return;
       
     break;
 
@@ -775,13 +775,13 @@ void fadeValues(int fadestep) { // Changes *color*fade values
 
 void spectrumCycle() {
 
-  for(int i=0; i<NUM_LEDSF; i++) {
+  hue++;
 
+  for(int i=0; i<NUM_LEDSF; i++) { //Sets all the leds to the hue that is changed every time the function is called.
     ledsF[i] = CHSV(hue, 255, 255);
     ledsB[i] = CHSV(hue, 255, 255);
-    
   }
-  hue++;
+
   FastLED.show();
 
 }
