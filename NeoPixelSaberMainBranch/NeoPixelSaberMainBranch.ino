@@ -159,6 +159,9 @@ void loop() {
   if (bladeOff) { // If blade off...
     if (igniteBtnState == HIGH) { //  Starts the blade if the ignite button is pressed, or if the shocksensor is disturbed (enables stab ignition)
 
+      // Double check that the right values are active (easyfix for a bug I had...)
+        modeCase = modeCase - 1;
+        setMode();
       // Start Blade
         igniteBlade(red, green, blue);
 
@@ -330,7 +333,7 @@ void retractBlade() { // Retraction-animation for blade
   int lastLoop = NUM_LEDSF;
 
   if (!blueRedCrash) { // If the blueRedCrash isn't active, a normal retraction happens.
-    for(int i=0; i<bladeSegNum; i++) {
+    for(int i=0; i<bladeSegNum; i++) { 
       for(int j=lastLoop; j>lastLoop - bladeSegLenght; j--){
       ledsF[j] = CRGB::Black;
       ledsB[j] = CRGB::Black;
@@ -339,7 +342,6 @@ void retractBlade() { // Retraction-animation for blade
       FastLED.show();
       delay(DELAYVAL); // Pause before next pass through loop
     } 
-
     for(int i=bladeSegRemain; i>-1; i--){
       ledsF[i] = CRGB::Black; 
       ledsB[i] = CRGB::Black;
@@ -375,7 +377,7 @@ void retractBlade() { // Retraction-animation for blade
 
   // *** Debugging ***
     Serial.println("Blade retracted");
-  
+
 }
 
 void setMode() { // Sets Mode (colors, effect intensities etc.)
@@ -605,9 +607,9 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
 
     case 9: // BLUE AND RED CRASH
 
-      blueRedCrash = !blueRedCrash;
+      blueRedCrash = true;
 
-      funMode = !funMode;
+      funMode = true;
 
       // Pulsing Intensity Change
         pulseLow = 50;
@@ -630,8 +632,8 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         pulseLow = 0;
         pulseAmount = 0;
 
-      blueRedCrash = !blueRedCrash;
-      spectrumFade = !spectrumFade;
+      blueRedCrash = false;
+      spectrumFade = true;
 
       msSpectrumInterval = 0;
       spectrumFreq = 0;
@@ -642,8 +644,8 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
     break;
 
     case 11: // SPECTRUM PUSH
-      spectrumFade = !spectrumFade;
-      spectrumPush = !spectrumPush;
+      spectrumFade = false;
+      spectrumPush = true;
 
       // Pulsing Intensity Change
         pulseLow = 0;
@@ -687,6 +689,7 @@ void blasterDeflect() { // Blaster Deflect Effect
     blueFade = blueDef;
 
   // Chooses a random position for the deflect animation
+
     randomEffectStartPos = random(minStartPos, maxStartPos);
 
   // *** Debugging ***
@@ -842,6 +845,8 @@ void spectrumPushCycle(bool ignition) {
 
   }
   FastLED.show();
+
+  spectrumPush = true;
 
 }
 
