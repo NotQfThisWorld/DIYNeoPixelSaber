@@ -5,7 +5,7 @@
 
 // Sound Variables
   const int speakerPin = 5;
-  int hum = 40, deflectSound = 400, igniteRetract = 200;
+  int hum = 40, deflectSound = 400, igniteRetract = 200, igniteRetractLenght = 200;
 
 // Number of Leds
   const int NUM_LEDSF = 117, NUM_LEDSB = 117;
@@ -31,7 +31,9 @@
   bool tipChange = false; // Boolean to check if tip is different color or not
   bool pulseDown = true; // Boolean to check if the blade is pulsing down or not
   bool blueRedCrash = false; // Boolean to check if the blue and red crash mode is active or not
-  bool spectrumMode = false; // Boolean to check if the spectrumMode is active or not
+  bool spectrumFade = false; // Boolean to check if the spectrumFade is active or not
+  bool spectrumPush = false; //  Boolean to check if the spectrumPush is active or not
+  bool funMode = false; // Boolean to check if the mode running is a funmode or not. If funmode, some effects won't run.
 
 // Power-Button-Indicator LED Pins (if you use them.)
   const int redIndi = 8, greenIndi = 7;
@@ -91,11 +93,16 @@
 // pulsinging Light Variables
   int pulseLowest, pulseLow, pulsingBrightness, pulseAmount, pulseFreq;
 
+// Spectrum Variables
+  int spectrumFreq = 0;
+
+
 // Millis Variables
   unsigned long msStart = 0;
-  unsigned long msPrevPulseDown = 0, msPrevPulseUp = 0; // To check how long it is since it last pulsed
-  unsigned long msPrevModeChange = 0, msModeInterval = 500; // To check how long it is since it last changed mode
-  unsigned long msPrevBlaster = 0, msBlasterInterval = 500; // To check how long it is since it last played blaster deflect effect.
+  unsigned long msPrevPulseDown = 0; // To check how long it has been since it last pulsed
+  unsigned long msPrevModeChange = 0, msModeInterval = 400; // To check how long it has been since it last changed mode
+  unsigned long msPrevBlaster = 0, msBlasterInterval = 500; // To check how long it has been since it last played blaster deflect effect.
+  unsigned long msPrevSpectrum = 0, msSpectrumInterval = 100; // To check how long it has been since it last did a spectrumpushcycle.
 
 // Variables used in calculations
 
@@ -103,7 +110,6 @@ int halfBlade = NUM_LEDSF/2;
 int bladeSegLenght = 10; // How long each segment used in the ignition/retraction functions are.
 int bladeSegNum = NUM_LEDSF/bladeSegLenght; // How many full sets of the segments is able to fit in the bladelenght
 int bladeSegRemain = NUM_LEDSF-bladeSegNum; // How long the remaining segment is.
-
 
 
 void setup() {
@@ -172,11 +178,7 @@ void loop() {
         
         msPrevModeChange = msStart;
 
-
-
     }
-
-
   }
   else { // If blade is on...
     if (igniteBtnState == HIGH && actionBtnState == LOW) { // Retracts the blade if the ignite button is pressed.
@@ -185,10 +187,9 @@ void loop() {
         retractBlade();  
 
     }
-
     else if (actionBtnState == HIGH && igniteBtnState == LOW && tipChange && (msStart-msPrevBlaster > msBlasterInterval)) { // Checks if the knock switch has been disturbed. Runs blasterDeflect function if true.
 
-      if (!blueRedCrash && !spectrumMode){
+      if (!funMode){
       // Blaster Deflect Effect
         blasterDeflect();
       
@@ -198,7 +199,7 @@ void loop() {
     }
     else if (actionBtnState == HIGH && tipChange && igniteBtnState == HIGH) { // Checks if actionbutton is pressed, and tipchange is true. Turns on tip if both true
 
-      if (!blueRedCrash && !spectrumMode){
+      if (!funMode){
         // Melttip on
           meltTip(true);
       }
@@ -206,7 +207,7 @@ void loop() {
     }
     else if (actionBtnState == LOW && !tipChange && igniteBtnState == LOW) { // Checks if actionbutton is not pressed, and if tipchange is false. Turns of tip if both are false
 
-      if (!blueRedCrash && !spectrumMode){
+      if (!funMode){
         // Melttip off
           meltTip(false);
       }
@@ -221,8 +222,13 @@ void loop() {
     }
   }
 
-  if (spectrumMode && !bladeOff) { // If the blade is on and the spectrumMode is active, run one cycle of the spectrumCycle function.
-    spectrumCycle();
+  if (spectrumFade && !bladeOff && msStart-msPrevSpectrum > msSpectrumInterval) { // If the blade is on, the time since last spectrum cycle is long enough
+    spectrumFadeCycle();                                                              // and the spectrumFade is active, run one cycle of the spectrumCycle function.
+  }
+  if (spectrumPush && !bladeOff && msStart-msPrevSpectrum > msSpectrumInterval) {// If the blade is on, the time since last spectrum cycle is long enough
+    spectrumPushCycle(false);                                                    // and the spectrumPush is active, run one cycle of the spectrumPushCycle function.
+
+    msPrevSpectrum = msStart;
   }   
 }
 
@@ -239,7 +245,7 @@ void igniteBlade(int red, int green, int blue) { // Ignition-animation for blade
   
   int lastLoop = 0;
 
-  if (!blueRedCrash) { // If the blueRedCrash isn't active, a normal ignition happens.
+  if (!blueRedCrash && !spectrumPush) { // If the blueRedCrash isn't active, a normal ignition happens.
     for(int i=0; i<bladeSegNum; i++) { // Starts each pixel with the set color, with DELAYVAL between each
       for(int j=lastLoop; j<lastLoop + bladeSegLenght; j++){
       ledsF[j].setRGB( red, green, blue);
@@ -278,6 +284,11 @@ void igniteBlade(int red, int green, int blue) { // Ignition-animation for blade
       FastLED.show();
     }
   }
+  else if (spectrumPush) {
+
+    spectrumPushCycle(true);
+
+  }
 
   // Blade is now On
     bladeOff = ! bladeOff; 
@@ -299,7 +310,7 @@ void igniteBlade(int red, int green, int blue) { // Ignition-animation for blade
 void retractBlade() { // Retraction-animation for blade
 
   // Start retract sound
-    tone(speakerPin, igniteRetract, 200);
+    tone(speakerPin, igniteRetract, igniteRetractLenght);
 
   // Setting Brightness back to default here, so the blade wont be on its "darker" end of its pulsing sequence.
     FastLED.setBrightness(BRIGHTNESS); 
@@ -530,7 +541,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         pulseAmount = 20;
         pulseFreq = 10;
 
-      modeName = "Magenta";
+      modeName = "MAGENTA";
       modeCase++;
     break;
 
@@ -587,12 +598,14 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
 
       blueRedCrash = !blueRedCrash;
 
+      funMode = !funMode;
+
       // Pulsing Intensity Change
         pulseLow = 50;
         pulseAmount = 10;
         pulseFreq = 150;
 
-      modeName = "BlueRedCrash";
+      modeName = "BLUEREDCRASH";
       modeCase ++;
 
     break;
@@ -609,16 +622,34 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         pulseAmount = 0;
 
       blueRedCrash = !blueRedCrash;
-      spectrumMode = !spectrumMode;
+      spectrumFade = !spectrumFade;
 
-      modeName = "spectrumMode";
+      msSpectrumInterval = 0;
+
+      modeName = "SPECTRUMFADE";
       modeCase ++;
 
     break;
 
-    case 11: // Turns of spectrumMode, and resets everything back to case 0.
+    case 11:
+      spectrumFade = !spectrumFade;
+      spectrumPush = !spectrumPush;
 
-      spectrumMode = !spectrumMode;
+      // Pulsing Intensity Change
+        pulseLow = 0;
+        pulseAmount = 0;
+
+      msSpectrumInterval = 100;
+
+      modeName = "SPECTRUMPUSH";
+      modeCase ++;
+
+    break;
+
+    case 12: // Turns of spectrumFade, and resets everything back to case 0.
+
+      spectrumPush = !spectrumPush;
+      funMode = !funMode;
       modeCase = 0;
       setMode();
       return;
@@ -773,7 +804,7 @@ void fadeValues(int fadestep) { // Changes *color*fade values
   }
 }
 
-void spectrumCycle() {
+void spectrumFadeCycle() {
 
   hue++;
 
@@ -782,6 +813,23 @@ void spectrumCycle() {
     ledsB[i] = CHSV(hue, 255, 255);
   }
 
+  FastLED.show();
+
+}
+
+void spectrumPushCycle(bool ignition) {
+
+  for(int i=0; i<NUM_LEDSF; i++) { //Sets all the leds to a different color, based on the hue that changes each time the loop goes through.
+    ledsF[i] = CHSV(hue, 255, 255);
+    ledsB[i] = CHSV(hue, 255, 255);
+
+    hue = hue + 2;
+
+    if (ignition) { // To shorten the code, the ignition function uses this to start the blade.
+      FastLED.show();
+    }
+
+  }
   FastLED.show();
 
 }
