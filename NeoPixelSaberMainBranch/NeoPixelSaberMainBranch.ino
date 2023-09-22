@@ -102,7 +102,7 @@
   unsigned long msPrevPulseDown = 0; // To check how long it has been since it last pulsed
   unsigned long msPrevModeChange = 0, msModeInterval = 400; // To check how long it has been since it last changed mode
   unsigned long msPrevBlaster = 0, msBlasterInterval = 500; // To check how long it has been since it last played blaster deflect effect.
-  unsigned long msPrevSpectrum = 0, msSpectrumInterval = 100; // To check how long it has been since it last did a spectrumpushcycle.
+  unsigned long msPrevSpectrum = 0, msSpectrumInterval = 50; // To check how long it has been since it last did a spectrumpushcycle.
 
 // Variables used in calculations
 
@@ -187,14 +187,19 @@ void loop() {
         retractBlade();  
 
     }
-    else if (actionBtnState == HIGH && igniteBtnState == LOW && tipChange && (msStart-msPrevBlaster > msBlasterInterval)) { // Checks if the knock switch has been disturbed. Runs blasterDeflect function if true.
-
-      if (!funMode){
+    else if (actionBtnState == HIGH && igniteBtnState == LOW && (msStart-msPrevBlaster > msBlasterInterval)) { // Checks if the knock switch has been disturbed. Runs blasterDeflect function if true.
+      
+      if (!funMode && tipChange){
       // Blaster Deflect Effect
         blasterDeflect();
+      }
+      else if (funMode) {
+
+        spectrumFreqChange();
+
+      }
       
       msPrevBlaster = msStart;
-      }
 
     }
     else if (actionBtnState == HIGH && tipChange && igniteBtnState == HIGH) { // Checks if actionbutton is pressed, and tipchange is true. Turns on tip if both true
@@ -222,14 +227,18 @@ void loop() {
     }
   }
 
-  if (spectrumFade && !bladeOff && msStart-msPrevSpectrum > msSpectrumInterval) { // If the blade is on, the time since last spectrum cycle is long enough
-    spectrumFadeCycle();                                                              // and the spectrumFade is active, run one cycle of the spectrumCycle function.
-  }
-  if (spectrumPush && !bladeOff && msStart-msPrevSpectrum > msSpectrumInterval) {// If the blade is on, the time since last spectrum cycle is long enough
-    spectrumPushCycle(false);                                                    // and the spectrumPush is active, run one cycle of the spectrumPushCycle function.
+  if (funMode) {
+    if (spectrumFade && !bladeOff && msStart-msPrevSpectrum > msSpectrumInterval) { // If the blade is on, the time since last spectrum cycle is long enough
+      spectrumFadeCycle();                                                          // and the spectrumFade is active, run one cycle of the spectrumCycle function.
+      
+      msPrevSpectrum = msStart;
+    }
+    if (spectrumPush && !bladeOff && msStart-msPrevSpectrum > msSpectrumInterval) {// If the blade is on, the time since last spectrum cycle is long enough
+      spectrumPushCycle(false);                                                    // and the spectrumPush is active, run one cycle of the spectrumPushCycle function.
 
-    msPrevSpectrum = msStart;
-  }   
+      msPrevSpectrum = msStart;
+    }
+  }
 }
 
 void igniteBlade(int red, int green, int blue) { // Ignition-animation for blade
@@ -610,7 +619,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
 
     break;
 
-    case 10: // SPECTRUM
+    case 10: // SPECTRUM FADE
 
       // Primary color
         red = 255;
@@ -625,13 +634,14 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
       spectrumFade = !spectrumFade;
 
       msSpectrumInterval = 0;
+      spectrumFreq = 0;
 
       modeName = "SPECTRUMFADE";
       modeCase ++;
 
     break;
 
-    case 11:
+    case 11: // SPECTRUM PUSH
       spectrumFade = !spectrumFade;
       spectrumPush = !spectrumPush;
 
@@ -640,6 +650,7 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
         pulseAmount = 0;
 
       msSpectrumInterval = 100;
+      spectrumFreq = 2;
 
       modeName = "SPECTRUMPUSH";
       modeCase ++;
@@ -648,8 +659,8 @@ void setMode() { // Sets Mode (colors, effect intensities etc.)
 
     case 12: // Turns of spectrumFade, and resets everything back to case 0.
 
-      spectrumPush = !spectrumPush;
-      funMode = !funMode;
+      spectrumPush = false;
+      funMode = false;
       modeCase = 0;
       setMode();
       return;
@@ -831,5 +842,41 @@ void spectrumPushCycle(bool ignition) {
 
   }
   FastLED.show();
+
+}
+
+void spectrumFreqChange() {
+
+  switch (spectrumFreq) {
+
+    case 0:
+      msSpectrumInterval = 0;
+      spectrumFreq++;
+    break;
+
+    case 1:
+      msSpectrumInterval = 50;
+      spectrumFreq++;
+    break;
+
+    case 2:
+      msSpectrumInterval = 100;
+      spectrumFreq++;
+    break;
+
+    case 3:
+      msSpectrumInterval = 200;
+      spectrumFreq++;
+    break;
+
+    case 4:
+      spectrumFreq = 0;
+      spectrumFreqChange();
+      return;
+    break;
+
+  }
+
+  Serial.println(msSpectrumInterval);
 
 }
