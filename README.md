@@ -4,7 +4,8 @@
 
 
 This is the github for a project I made. It is called the NeoPixelSaber.
-My goal was to make a lightsaber using an arduino nano, and relativly cheap or even salvaged parts.
+My goal was to make a lightsaber using an arduino nano, and relativly cheap or even salvaged parts. Although I managed to do this, it easily broke, so I decided to print certain parts when I got a 3D-printer. 
+The original however (the one showed in the pictures and that I will be giving the instructions for), is completly made from non-3D-printed parts.
 
 ## Features:
 
@@ -99,8 +100,8 @@ No need to write the full code now, you can adjust it as you go.
 
 ## QnA
 
-### Q: Why only 8-bit sound?
-A: Because I originally didn't plan to include sound at all, because I ran into interupt-problems. I managed to get sound working later down the line, but only 8bit (basically just using the built-in tone() function with a speaker). I would have liked to add better sound, with the sound files on a micro-sd card or something, but as of rigth now, this is out of the scope of this project.
+### Q: Why no sound?
+A: Short version: Because I ran into interupt-problems. I managed to get sound working later down the line, but only 8bit (basically just using the built-in tone() function with a speaker), but it was just to noisy. I ended up turning off the sound most of the time anyways, and when I decided to 3d-print new parts, I left the speaker out. I would have liked to add better sound, with the sound files on a micro-sd card or something, but as of rigth now, this is out of the scope of this project.
 
 ### Q: How much did it cost?
 A: A rough estimate is around 1500 Norwegian Kroners, which translates into around 140 American dollars.
@@ -109,10 +110,10 @@ A: A rough estimate is around 1500 Norwegian Kroners, which translates into arou
 A: I started in late December 2022, and finished around 17. May 2023. So, around 4 months. I still do tweaks to the code, and even add more features (like the sound effects, which I added in September 2023), so you could say that I may never be quite done.
 
 ### Q: What was the hardest part?
-A: The hardest part was probably the blade. Getting the strip, with the diffuser, into the blade without making it uneven, was really hard. And doing the electronics part of the blade was hard, since I had to make sure that it wouldn't be to visible on the outside of the blade.
+A: The hardest part was probably the blade. Getting the strip, with the diffuser, into the blade without making it uneven, was really hard. I had to do it multiple times. And doing the electronics part of the blade was hard too, since I had to make sure that it wouldn't be to visible on the outside of the blade. 
 
 ### Q: Will there be a version 2?
-A: Only time will tell. I may upgrade the current saber with features (better sound maybe?), but I really want to make a version 2 when I am more experienced and have access to more resources.
+A: Only time will tell. I may upgrade the current saber with features (sound maybe?), but I really want to make a version 2 when I am more experienced and have access to more resources.
 
 ## Contact Me
 If you have any questions, need help with anything, or have suggestions, feel free to shoot me a message on Discord: _@NotQfThisWorld_
