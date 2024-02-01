@@ -101,7 +101,7 @@ No need to write the full code now, you can adjust it as you go.
 ## QnA
 
 ### Q: Why no sound?
-A: Short version: Because I ran into interupt-problems. I managed to get sound working later down the line, but only 8bit (basically just using the built-in tone() function with a speaker), but it was just to noisy. I ended up turning off the sound most of the time anyways, and when I decided to 3d-print new parts, I left the speaker out. I would have liked to add better sound, with the sound files on a micro-sd card or something, but as of rigth now, this is out of the scope of this project.
+A: Short version: Because I ran into interupt-problems. I managed to get sound working later down the line, but only 8bit (basically just using the built-in tone() function with a speaker), but it was just to sharp, and really quiet. I ended up turning off the sound most of the time anyways because of this, and when I decided to 3d-print new parts, I left the speaker out. I would have liked to add better sound, with the sound files on a micro-sd card or something, but as of rigth now, this is out of the scope of this project.
 
 ### Q: How much did it cost?
 A: A rough estimate is around 1500 Norwegian Kroners, which translates into around 140 American dollars.
