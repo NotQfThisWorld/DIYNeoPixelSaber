@@ -115,5 +115,8 @@ A: The hardest part was probably the blade. Getting the strip, with the diffuser
 ### Q: Will there be a version 2?
 A: Only time will tell. I may upgrade the current saber with features (sound maybe?), but I really want to make a version 2 when I am more experienced and have access to more resources.
 
+### Q: What's the deal with all the other branches?
+A: The Lightsaber went through lots of development, much of which never made it to the final version. I want people to be able to see how the project has evolved over time.
+
 ## Contact Me
 If you have any questions, need help with anything, or have suggestions, feel free to shoot me a message on Discord: _@NotQfThisWorld_
