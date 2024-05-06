@@ -5,7 +5,7 @@
 
 This is the github for a project I made. It is called the NeoPixelSaber.
 My goal was to make a lightsaber using an arduino nano, and relativly cheap or even salvaged parts. Although I managed to do this, some parts easily broke, so I decided to print certain parts when I got a 3D-printer. 
-The original however (the one showed in the pictures and that I will be giving the instructions for), is completly made from non-3D-printed parts.
+The original however (the one showed in most of the pictures and that I will be giving the instructions for), is completly made from non-3D-printed parts.
 
 ## Features:
 
